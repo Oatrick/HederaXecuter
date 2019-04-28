@@ -1,0 +1,38 @@
+export default {
+  production: {
+    NODE_ADDRESS: "",
+    NODE_ACCOUNT: "",
+    MICROPAYMENT_SERVER: "",
+    PUBLISHER_SERVER: "",
+    PORTAL: "https://portal.hedera.com",
+    PORTAL_TOKEN: ""
+  },
+  staging: {
+    NODE_ADDRESS: "",
+    NODE_ACCOUNT: "",
+    MICROPAYMENT_SERVER: "",
+    PUBLISHER_SERVER: "",
+    PORTAL: "https://dev.portal.hedera.com",
+    PORTAL_TOKEN: ""
+  },
+  development: {
+    NODE_ADDRESS: "localhost:50211",
+    NODE_ACCOUNT: "0.0.3",
+    MICROPAYMENT_SERVER: "http://localhost:8099",
+    PUBLISHER_SERVER: "http://localhost:8101",
+    PUBLISHER_API_POST: '/?rest_route=/hedera-micropayment/v1/hello',
+    PUBLISHER_API_SECRET: '',
+    PORTAL: "",
+    PORTAL_TOKEN: ""
+  },
+  test: {
+    NODE_ADDRESS: "35.237.130.140:50211",
+    NODE_ACCOUNT: "0.0.3",
+    MICROPAYMENT_SERVER: "http://localhost:9099",
+    PUBLISHER_SERVER: "http://localhost:9101",
+    PUBLISHER_API_POST: '/?rest_route=/hedera-micropayment/v1/hello',
+    PUBLISHER_API_SECRET: '',
+    PORTAL: "http://localhost:9001",
+    PORTAL_TOKEN: "somerandomtoken"
+  }
+}
