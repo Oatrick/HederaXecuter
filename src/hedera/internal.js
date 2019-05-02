@@ -150,11 +150,8 @@ function parseTx(tx) {
 }
 
 const parseNodeAccountFromTx = msg => {
-    console.log(44444, msg)
     const tx = Transaction.deserializeBinary(msg)
-    console.log(55555, tx)
     const txObj = tx.toObject()
-    console.log(txObj)
     const nodeAccountID = txObj.body.nodeaccountid
     const nodeAccount = new AccountID()
     nodeAccount.setShardnum(nodeAccountID.shardnum)
