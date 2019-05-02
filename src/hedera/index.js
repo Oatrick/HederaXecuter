@@ -23,7 +23,7 @@ class Hedera {
         class Client {
             // if nodeAccount and nodeAddress are not provided,
             // our client will not be initialised with them,
-            // we will have to do so later with, with Node
+            // we will have to do so later using withNode or withNodeFromTx or withNodeFromQ
             constructor(nodeAccount = undefined, nodeAddress = undefined) {
                 if (nodeAddress !== undefined) {
                     this.setClients(nodeAddress)
