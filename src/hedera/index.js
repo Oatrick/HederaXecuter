@@ -32,8 +32,7 @@ class Hedera {
                     this.setNodeAccount(nodeAccount)
                 }
             }
-            // if we didn't set the nodeAccount and nodeAddress when we initialised the client,
-            // we have the option of doing it later
+            // if we didn't set the nodeAccount and nodeAddress when we initialised the client, we can use this method
             withNode(nodeAccount, nodeAddress = undefined) {
                 this.setNodeAccount(nodeAccount)
                 // if nodeAddress is undefined, this.setClients is smart enough to retrieve
@@ -41,12 +40,15 @@ class Hedera {
                 this.setClients(nodeAddress)
             }
 
-            // where tx is a binary data
+            // if we didn't set the nodeAccount and nodeAddress when we initialised the client, we can use this method
+            // where tx is a binary data from a client
             withNodeFromTx(tx) {
                 this.nodeAccountID = i.parseNodeAccountFromTx(tx)
                 this.setClients()
             }
 
+            // if we didn't set the nodeAccount and nodeAddress when we initialised the client, we can use this method
+            // where q is a binary data from a client
             withNodeFromQ(q) {
                 this.nodeAccountID = i.parseNodeAccountFromQ(q)
                 this.setClients()
