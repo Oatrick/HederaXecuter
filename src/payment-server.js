@@ -88,29 +88,28 @@ io.on('connection', function(socket) {
 
     // CRYPTOTRANSFER
     socket.on(CRYPTOTRANSFER, async function(data) {
-        let client = hedera.withNodeFromTx(data).connect()
         let responseData, tx
-        try {
-            let result = await client.cryptoTransferProxy(data)
-            responseData = result.responseData
-            tx = result.tx
-            let data = Hedera.parseTx(tx)
-            data.nodePrecheckcode = responseData.nodePrecheckcode
-            // successful cryptoTransfer, so perform additional tasks
-            if (responseData.nodePrecheckcode === 0) {
-                await portalReward(data) // reward the account
-            }
-            // whether our cryptoTransfer succeeds or fails, we want to notify the publisher,
-            // for publisher's record
-            if (publisherAPIExists) {
-                await publisherAPI(data) // use REST API POST
-            } else {
-                ioClientPublisher.binary(true).emit(CRYPTOTRANSFER, data) // use socketio
-            }
-        } catch (e) {
-            console.log(e)
+        let client = hedera.withNodeFromTx(data).connect()
+
+        // make the gRPC call (we can't use try-catch here)
+        let result = await client.cryptoTransferProxy(data)
+        responseData = result.responseData
+        tx = result.tx
+        let resultTx = Hedera.parseTx(tx)
+        data.nodePrecheckcode = responseData.nodePrecheckcode
+        // successful cryptoTransfer, so perform additional tasks
+        if (responseData.nodePrecheckcode === 0) {
+            await portalReward(resultTx) // reward the account
+        }
+        // whether our cryptoTransfer succeeds or fails, we want to notify the publisher,
+        // for publisher's record
+        if (publisherAPIExists) {
+            await publisherAPI(resultTx) // use REST API POST
+        } else {
+            ioClientPublisher.binary(true).emit(CRYPTOTRANSFER, resultTx) // use socketio
         }
 
+        // response back to client
         socket.binary(true).emit(`${CRYPTOTRANSFER}_RESPONSE`, responseData)
     })
 
