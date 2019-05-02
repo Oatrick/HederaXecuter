@@ -42,9 +42,9 @@ function getTransactionReceipts(self, txID) {
     q.setTransactiongetreceipt(transactionGetReceiptQuery)
 
     // make the request
-    self.clientCrypto.getTransactionReceipts(q, function(err, res) {
+    self.clientCrypto.getTransactionReceipts(q, function (err, res) {
         console.log(err)
-        console.log('Get Transaction Receipt', res)
+        // console.log('Get Transaction Receipt', res)
     })
 }
 
@@ -119,7 +119,7 @@ function prepareResponseData(response) {
 
 function getTxReceiptsResponseType(res) {
     let r = Response.toObject(true, res)
-    console.log('r', r)
+    // console.log('r', r)
     let responseHeader = new ResponseHeader()
     responseHeader.setNodetransactionprecheckcode(
         r.transactiongetreceipt.header.nodetransactionprecheckcode

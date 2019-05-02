@@ -66,6 +66,9 @@ class Hedera {
 
     // handles incoming socketio data (query or transaction, in bytes) from web client, calls Hedera, and returns the response data back to socketio client
     async cryptoTransferProxy(msg) {
+
+        console.log("22222222 000000000 222222222")
+        console.log(msg)
         let response = await cryptoTransferProxy(this, msg)
         return response
     }

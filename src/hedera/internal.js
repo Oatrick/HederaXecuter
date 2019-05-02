@@ -63,11 +63,41 @@ function getTimestamp() {
     return ts
 }
 
-function randNodeAddr(nodeAddresses) {
-    let randNodeGen = nodeAddresses[Math.floor(Math.random() * nodeAddresses.length)]
-    let address = randNodeGen.address
-    let account = randNodeGen.account
 
+/**
+ *
+ * randNodeAddr provides a random node for grpc calls
+ * @param {object} nodeAddresses
+ * @returns object that contains the node ip and node accountID
+ */
+function randNodeAddr(nodeAddresses) {
+    let randNodeGen =
+        nodeAddresses[Math.floor(Math.random() * nodeAddresses.length)]
+    let randNodeSplit = JSON.stringify(randNodeGen).split(/"/)
+    let address = randNodeSplit[3]
+    let account = randNodeSplit[1]
+    return {
+        address,
+        account
+    }
+}
+
+/**
+ *
+ * nodeAddr provides the chosen node that exist in the list of node addresses (file 0.0.101) for grpc calls.
+ * @param {object} account
+ * @param {Array} nodeAddresses
+ * @returns object that contains the node ip and node accountID
+ */
+function nodeAddr(account, nodeAddresses) {
+    let address
+    let retrieveNodeFromList = nodeAddresses.find(obj =>
+        obj.hasOwnProperty(account)
+    )
+    if (isNullOrUndefined(retrieveNodeFromList)) {
+        throw new Error('node does not exist, please choose other nodes')
+    }
+    address = retrieveNodeFromList[account]
     return {
         address,
         account
@@ -111,7 +141,7 @@ function parseTx(tx) {
     let txValidStart = txObj.body.transactionid.transactionvalidstart
     let transactionId = `${account}@${txValidStart.seconds}.${
         txValidStart.nanos
-    }` // transactionID
+        }` // transactionID
     let accountamountsList =
         txObj.body.cryptotransfer.transfers.accountamountsList
     let cost = Math.abs(accountamountsList[0].amount)
