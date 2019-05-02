@@ -2,6 +2,7 @@ import { AccountID, Signature, SignatureList } from './pbnode/BasicTypes_pb'
 import { Timestamp } from './pbnode/Timestamp_pb'
 import { Duration } from './pbnode/Duration_pb'
 import { Transaction } from './pbnode/Transaction_pb'
+import { Query } from './pbnode/Query_pb'
 import forge from 'node-forge'
 
 const ed25519 = forge.pki.ed25519
@@ -155,7 +156,14 @@ const parseNodeAccountFromTx = msg => {
 
 const parseNodeAccountFromQ = msg => {
     const q = Query.deserializeBinary(msg)
-    return q.getBody().getNodeaccountid()
+    const qObj = q.toObject()
+    const nodeAccountID =
+        qObj.cryptogetaccountbalance.header.payment.body.nodeaccountid
+    const nodeAccount = new AccountID()
+    nodeAccount.setShardnum(nodeAccountID.shardnum)
+    nodeAccount.setRealmnum(nodeAccountID.realmnum)
+    nodeAccount.setAccountnum(nodeAccountID.accountnum)
+    return nodeAccount
 }
 
 export default {

@@ -15,10 +15,11 @@ const getRandomNode = () => {
 }
 
 const getNodeAddressFromNodeAccount = nodeAccount => {
-    const ADDRESS_BOOK = addressBook[process.env.NODE_ENV]
+    const ADDRESS_BOOK = addressBook[process.env.NODE_ENV]['ADDRESS_BOOK']
+    console.log(ADDRESS_BOOK)
     for (let i = 0; i < ADDRESS_BOOK.length; i++) {
         let currentNode = ADDRESS_BOOK[i]
-        let currentNodeAccount = Object.keys(node)[0]
+        let currentNodeAccount = Object.keys(currentNode)[0]
         if (currentNodeAccount === nodeAccount) {
             // this is the nodeAddress
             return currentNode[nodeAccount]

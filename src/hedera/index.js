@@ -38,6 +38,7 @@ class Hedera {
                 // if nodeAddress is undefined, this.setClients is smart enough to retrieve
                 // the appropriate node address from our address book
                 this.setClients(nodeAddress)
+                return this
             }
 
             // if we didn't set the nodeAccount and nodeAddress when we initialised the client, we can use this method
@@ -45,6 +46,7 @@ class Hedera {
             withNodeFromTx(tx) {
                 this.nodeAccountID = i.parseNodeAccountFromTx(tx)
                 this.setClients()
+                return this
             }
 
             // if we didn't set the nodeAccount and nodeAddress when we initialised the client, we can use this method
@@ -52,6 +54,7 @@ class Hedera {
             withNodeFromQ(q) {
                 this.nodeAccountID = i.parseNodeAccountFromQ(q)
                 this.setClients()
+                return this
             }
 
             withOperator(keypair, account) {
@@ -67,10 +70,12 @@ class Hedera {
                     const nodeAccount = i.accountStringFromAccountID(
                         this.nodeAccountID
                     )
+                    console.log('nodeAccount', nodeAccount)
                     nodeAddress = address.getNodeAddressFromNodeAccount(
                         nodeAccount
                     )
                 }
+                console.log('nodeAddress', nodeAddress)
 
                 this.clientCrypto = new CryptoServiceClient(
                     nodeAddress,

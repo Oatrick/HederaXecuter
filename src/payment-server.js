@@ -50,7 +50,6 @@ ioClientPublisher.on('connect', function() {
 io.on('connection', function(socket) {
     let clientID = socket.id
     let clientIP = socket.handshake.address
-    if (client) client.socket = socket
     console.log('User-Client Connected!: IP: ' + clientIP)
 
     // Note: balance request can be directly handled by Hedera chrome extension with grpc-web
