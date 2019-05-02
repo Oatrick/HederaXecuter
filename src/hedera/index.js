@@ -70,12 +70,10 @@ class Hedera {
                     const nodeAccount = i.accountStringFromAccountID(
                         this.nodeAccountID
                     )
-                    console.log('nodeAccount', nodeAccount)
                     nodeAddress = address.getNodeAddressFromNodeAccount(
                         nodeAccount
                     )
                 }
-                console.log('nodeAddress', nodeAddress)
 
                 this.clientCrypto = new CryptoServiceClient(
                     nodeAddress,
