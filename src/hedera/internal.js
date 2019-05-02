@@ -1,17 +1,7 @@
-import {
-    AccountID,
-    Signature,
-    SignatureList
-} from './pbnode/BasicTypes_pb'
-import {
-    Timestamp
-} from './pbnode/Timestamp_pb'
-import {
-    Duration
-} from './pbnode/Duration_pb'
-import {
-    Transaction
-} from './pbnode/Transaction_pb'
+import { AccountID, Signature, SignatureList } from './pbnode/BasicTypes_pb'
+import { Timestamp } from './pbnode/Timestamp_pb'
+import { Duration } from './pbnode/Duration_pb'
+import { Transaction } from './pbnode/Transaction_pb'
 import forge from 'node-forge'
 
 const ed25519 = forge.pki.ed25519
@@ -33,27 +23,33 @@ function accountStringFromAccountID(accountID) {
     if (accountID === undefined || accountID === null) {
         return undefined
     }
-    return (
-        `${accountID.getShardnum().toString()}.${accountID.getRealmnum().toString()}.${accountID.getAccountnum().toString()}`
-    )
+    return `${accountID
+        .getShardnum()
+        .toString()}.${accountID
+        .getRealmnum()
+        .toString()}.${accountID.getAccountnum().toString()}`
 }
 
 function fileStringFromFileID(fileID) {
     if (fileID === undefined || fileID === null) {
         return undefined
     }
-    return (
-        `${fileID.getShardnum().toString()}.${fileID.getRealmnum().toString()}.${fileID.getFilenum().toString()}`
-    )
+    return `${fileID
+        .getShardnum()
+        .toString()}.${fileID
+        .getRealmnum()
+        .toString()}.${fileID.getFilenum().toString()}`
 }
 
 function contractStringFromContractID(contractID) {
     if (contractID === undefined || contractID === null) {
         return undefined
     }
-    return (
-        `${contractID.getShardnum().toString()}.${contractID.getRealmnum().toString()}.${contractID.getContractnum().toString()}`
-    )
+    return `${contractID
+        .getShardnum()
+        .toString()}.${contractID
+        .getRealmnum()
+        .toString()}.${contractID.getContractnum().toString()}`
 }
 
 function getTimestamp() {
@@ -62,7 +58,6 @@ function getTimestamp() {
     ts.setSeconds(seconds)
     return ts
 }
-
 
 /**
  *
@@ -112,13 +107,13 @@ function getDuration() {
 
 function signWithKeys(txBodyBytes, ...privateKeysInHex) {
     let privateKeys = []
-    privateKeysInHex.forEach(function (pkInHex) {
+    privateKeysInHex.forEach(function(pkInHex) {
         let privateKeyInBytes = forge.util.hexToBytes(pkInHex)
         privateKeys.push(privateKeyInBytes)
     })
 
     let ed25519Signatures = []
-    privateKeys.forEach(function (pk) {
+    privateKeys.forEach(function(pk) {
         let sig = new Signature()
         let signature = ed25519.sign({
             message: txBodyBytes,
@@ -141,7 +136,7 @@ function parseTx(tx) {
     let txValidStart = txObj.body.transactionid.transactionvalidstart
     let transactionId = `${account}@${txValidStart.seconds}.${
         txValidStart.nanos
-        }` // transactionID
+    }` // transactionID
     let accountamountsList =
         txObj.body.cryptotransfer.transfers.accountamountsList
     let cost = Math.abs(accountamountsList[0].amount)
@@ -153,7 +148,15 @@ function parseTx(tx) {
     }
 }
 
+const parseNodeAccountFromTx = msg => {
+    const tx = Transaction.deserializeBinary(msg)
+    return tx.getBody().getNodeaccountid()
+}
 
+const parseNodeAccountFromQ = msg => {
+    const q = Query.deserializeBinary(msg)
+    return q.getBody().getNodeaccountid()
+}
 
 export default {
     accountIDFromString,
@@ -164,5 +167,7 @@ export default {
     getDuration,
     signWithKeys,
     parseTx,
-    randNodeAddr
+    randNodeAddr,
+    parseNodeAccountFromTx,
+    parseNodeAccountFromQ
 }

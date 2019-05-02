@@ -13,7 +13,6 @@ import { TransactionBody } from './hedera/pbnode/Transaction_pb'
 import { enumKeyByValue } from './hedera/utils'
 import portalReward from './portal'
 import { publisherAPIExists, publisherAPI } from './publisher'
-import address from './hedera/address'
 const env = process.env.NODE_ENV
 
 // on staging, PUBLISHER_SERVER is https://thetimesta.mp
@@ -35,16 +34,7 @@ const app = express()
 const server = http.createServer(app)
 const io = ioServer().listen(server)
 
-// let node = address.getNodeAddr(submissionNode)
-// console.log('node 44444444444444 : ', node)
-// const hedera = new Hedera.Client(node.address, node.account)
-
-
-let hedera = new Hedera.Client(
-    config[env].NODE_ADDRESS,
-    config[env].NODE_ACCOUNT
-)
-let client = hedera.connect()
+let hedera = new Hedera.Client()
 
 // just a blank page
 app.get('/', (req, res) => {
@@ -53,11 +43,11 @@ app.get('/', (req, res) => {
 
 // socketio client to publisher's socketio server
 let ioClientPublisher = ioClient(PUBLISHER_SERVER)
-ioClientPublisher.on('connect', function () {
+ioClientPublisher.on('connect', function() {
     console.log(`Connected to ${PUBLISHER_SERVER} SocketIO Server`)
 })
 
-io.on('connection', function (socket) {
+io.on('connection', function(socket) {
     let clientID = socket.id
     let clientIP = socket.handshake.address
     if (client) client.socket = socket
@@ -67,8 +57,9 @@ io.on('connection', function (socket) {
     // once Hedera implements grpc-web support
 
     // CRYPTOGETACCOUNTBALANCE
-    socket.on(CRYPTOGETACCOUNTBALANCE, async function (data) {
+    socket.on(CRYPTOGETACCOUNTBALANCE, async function(data) {
         console.log(CRYPTOGETACCOUNTBALANCE, clientID, data)
+        let client = hedera.withNodeFromQ(data).connect()
         let responseData
         try {
             responseData = await client.getAccountBalanceProxy(data)
@@ -82,8 +73,8 @@ io.on('connection', function (socket) {
     })
 
     // TRANSACTIONGETRECEIPT
-    socket.on(TRANSACTIONGETRECEIPT, async function (data) {
-        // console.log(TRANSACTIONGETRECEIPT, clientID, data)
+    socket.on(TRANSACTIONGETRECEIPT, async function(data) {
+        let client = hedera.withNodeFromQ(data).connect()
         let responseData
         try {
             responseData = await client.getTransactionReceiptsProxy(data)
@@ -97,13 +88,11 @@ io.on('connection', function (socket) {
     })
 
     // CRYPTOTRANSFER
-    socket.on(CRYPTOTRANSFER, async function (msg) {
-        // console.log(CRYPTOTRANSFER, clientID, msg)
+    socket.on(CRYPTOTRANSFER, async function(data) {
+        let client = hedera.withNodeFromTx(data).connect()
         let responseData, tx
         try {
-            console.log("1111111111 000000000 1111111111")
-            console.log(msg)
-            let result = await client.cryptoTransferProxy(msg)
+            let result = await client.cryptoTransferProxy(data)
             responseData = result.responseData
             tx = result.tx
             let data = Hedera.parseTx(tx)
@@ -127,8 +116,9 @@ io.on('connection', function (socket) {
     })
 
     // CONTRACTCALL
-    socket.on(CONTRACTCALL, async function (data) {
+    socket.on(CONTRACTCALL, async function(data) {
         console.log(CONTRACTCALL, clientID, data)
+        let client = hedera.withNodeFromTx(data).connect()
         let responseData
         try {
             responseData = await client.contractCallProxy(data)
@@ -140,8 +130,9 @@ io.on('connection', function (socket) {
     })
 
     // FILEGETCONTENTS
-    socket.on(FILEGETCONTENTS, async function (data) {
+    socket.on(FILEGETCONTENTS, async function(data) {
         console.log(FILEGETCONTENTS, clientID, data)
+        let client = hedera.withNodeFromQ(msg).connect()
         let responseData
         try {
             responseData = await client.fileGetContentsProxy(data)
@@ -152,7 +143,7 @@ io.on('connection', function (socket) {
         socket.binary(true).emit(`${FILEGETCONTENTS}_RESPONSE`, responseData)
     })
 
-    socket.on('disconnect', function (data) {
+    socket.on('disconnect', function(data) {
         if (env !== 'test') console.log(clientID + ' has disconnected')
     })
 })
