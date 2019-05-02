@@ -151,14 +151,28 @@ function parseTx(tx) {
 
 const parseNodeAccountFromTx = msg => {
     const tx = Transaction.deserializeBinary(msg)
-    return tx.getBody().getNodeaccountid()
+    const txObj = tx.toObject()
+    const nodeAccountID = txObj.body.nodeaccountid
+    const nodeAccount = new AccountID()
+    nodeAccount.setShardnum(nodeAccountID.shardnum)
+    nodeAccount.setRealmnum(nodeAccountID.realmnum)
+    nodeAccount.setAccountnum(nodeAccountID.accountnum)
+    return nodeAccount
 }
 
 const parseNodeAccountFromQ = msg => {
     const q = Query.deserializeBinary(msg)
     const qObj = q.toObject()
-    const nodeAccountID =
-        qObj.cryptogetaccountbalance.header.payment.body.nodeaccountid
+    const qObjKeys = Object.keys(qObj)
+    let qName
+    for (let i = 0; i < qObjKeys.length; i++) {
+        const currentKey = qObjKeys[i]
+        if (qObj[currentKey] !== undefined) {
+            qName = currentKey
+        }
+    }
+    // the node account id is stashed in a different header based on the query name (query type)
+    const nodeAccountID = qObj[qName].header.payment.body.nodeaccountid
     const nodeAccount = new AccountID()
     nodeAccount.setShardnum(nodeAccountID.shardnum)
     nodeAccount.setRealmnum(nodeAccountID.realmnum)
