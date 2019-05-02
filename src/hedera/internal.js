@@ -135,6 +135,7 @@ function signWithKeys(txBodyBytes, ...privateKeysInHex) {
 
 function parseTx(tx) {
     let txObj = Transaction.toObject(true, tx)
+    console.log("444444444111111   55555555555", txObj.body.nodeaccountid)
     let memo = txObj.body.memo // memo
     let a = txObj.body.transactionid.accountid
     let account = `${a.shardnum}.${a.realmnum}.${a.accountnum}` // account
@@ -144,6 +145,10 @@ function parseTx(tx) {
         }` // transactionID
     let accountamountsList =
         txObj.body.cryptotransfer.transfers.accountamountsList
+    let shardNum = txObj.body.nodeaccountid.shardnum
+    let realmNum = txObj.body.nodeaccountid.realmnum
+    let accountNum = txObj.body.nodeaccountid.accountnum
+    let nodeAccountID = `${shardNum}.${realmNum}.${accountNum}`
     let cost = Math.abs(accountamountsList[0].amount)
     return {
         transactionId,

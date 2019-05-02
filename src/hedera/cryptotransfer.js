@@ -75,9 +75,6 @@ function cryptoTransfer(self, senderAccount, recipientAccount, amount) {
 
 async function cryptoTransferProxy(self, data) {
     let tx = Transaction.deserializeBinary(data)
-
-    console.log("3333333333 000000000 33333333333")
-    console.log(tx)
     let result = await cryptoTransferPromise(self, tx)
     let responseData = {}
     // Hedera network unreachable
