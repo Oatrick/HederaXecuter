@@ -21,7 +21,11 @@
         "stop": "pm2 stop app.json",
         "logs": "pm2 logs",
         "build": "babel -d ./dist ./src -s",
-        "test": "jest --detectOpenHandles --forceExit"
+        "test": "jest"
+    },
+    "bin": {
+        "create-token": "bin/create-token.js",
+        "test-wordpress": "bin/test-wordpress.js"
     },
     "repository": {
         "type": "git",

@@ -44,13 +44,13 @@ describe('payment-server events', function() {
         expect(response.status).toBe(200)
     })
 
-    test(`${CRYPTOGETACCOUNTBALANCE} events`, done => {
-        // we should prepare the actual query object instead of using null
-        let data = null
-        socket.emit(CRYPTOGETACCOUNTBALANCE, data)
-        socket.on(`${CRYPTOGETACCOUNTBALANCE}_RESPONSE`, function(res) {
-            expect(res).toEqual(testdata.getaccountbalance)
-            done()
-        })
-    })
+    // we should prepare the actual query object instead of using null, before enabling this test
+    // test(`${CRYPTOGETACCOUNTBALANCE} events`, done => {
+    //     let data = null
+    //     socket.binary(true).emit(CRYPTOGETACCOUNTBALANCE, data)
+    //     socket.on(`${CRYPTOGETACCOUNTBALANCE}_RESPONSE`, function(res) {
+    //         expect(res).toEqual(testdata.getaccountbalance)
+    //         done()
+    //     })
+    // })
 })
