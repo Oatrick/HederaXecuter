@@ -70,15 +70,12 @@ function cryptoTransfer(self, senderAccount, recipientAccount, amount) {
     // make the transaction request
     self.clientCrypto.cryptoTransfer(tx, function (err, response) {
         console.log(err)
-        console.log('TRANSFER.... ', response)
     })
 }
 
 async function cryptoTransferProxy(self, data) {
     let tx = Transaction.deserializeBinary(data)
     let result = await cryptoTransferPromise(self, tx)
-    console.log('RESULT OF CRYPTO TRANSFER PROMISE', result)
-    console.log(result.res)
     let responseData = {}
     // Hedera network unreachable
     if (result.err === 14) {
@@ -93,7 +90,6 @@ async function cryptoTransferProxy(self, data) {
     }
     if (result.err === null) {
         let r = TransactionResponse.toObject(true, result.res)
-        console.log('r is:', r)
         responseData = {
             nodePrecheckcode: r.nodetransactionprecheckcode,
             error: null

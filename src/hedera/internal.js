@@ -1,17 +1,8 @@
-import {
-    AccountID,
-    Signature,
-    SignatureList
-} from './pbnode/BasicTypes_pb'
-import {
-    Timestamp
-} from './pbnode/Timestamp_pb'
-import {
-    Duration
-} from './pbnode/Duration_pb'
-import {
-    Transaction
-} from './pbnode/Transaction_pb'
+import { AccountID, Signature, SignatureList } from './pbnode/BasicTypes_pb'
+import { Timestamp } from './pbnode/Timestamp_pb'
+import { Duration } from './pbnode/Duration_pb'
+import { Transaction } from './pbnode/Transaction_pb'
+import { Query } from './pbnode/Query_pb'
 import forge from 'node-forge'
 
 const ed25519 = forge.pki.ed25519
@@ -33,27 +24,33 @@ function accountStringFromAccountID(accountID) {
     if (accountID === undefined || accountID === null) {
         return undefined
     }
-    return (
-        `${accountID.getShardnum().toString()}.${accountID.getRealmnum().toString()}.${accountID.getAccountnum().toString()}`
-    )
+    return `${accountID
+        .getShardnum()
+        .toString()}.${accountID
+        .getRealmnum()
+        .toString()}.${accountID.getAccountnum().toString()}`
 }
 
 function fileStringFromFileID(fileID) {
     if (fileID === undefined || fileID === null) {
         return undefined
     }
-    return (
-        `${fileID.getShardnum().toString()}.${fileID.getRealmnum().toString()}.${fileID.getFilenum().toString()}`
-    )
+    return `${fileID
+        .getShardnum()
+        .toString()}.${fileID
+        .getRealmnum()
+        .toString()}.${fileID.getFilenum().toString()}`
 }
 
 function contractStringFromContractID(contractID) {
     if (contractID === undefined || contractID === null) {
         return undefined
     }
-    return (
-        `${contractID.getShardnum().toString()}.${contractID.getRealmnum().toString()}.${contractID.getContractnum().toString()}`
-    )
+    return `${contractID
+        .getShardnum()
+        .toString()}.${contractID
+        .getRealmnum()
+        .toString()}.${contractID.getContractnum().toString()}`
 }
 
 function getTimestamp() {
@@ -63,11 +60,40 @@ function getTimestamp() {
     return ts
 }
 
+/**
+ *
+ * randNodeAddr provides a random node for grpc calls
+ * @param {object} nodeAddresses
+ * @returns object that contains the node ip and node accountID
+ */
 function randNodeAddr(nodeAddresses) {
-    let randNodeGen = nodeAddresses[Math.floor(Math.random() * nodeAddresses.length)]
-    let address = randNodeGen.address
-    let account = randNodeGen.account
+    let randNodeGen =
+        nodeAddresses[Math.floor(Math.random() * nodeAddresses.length)]
+    let randNodeSplit = JSON.stringify(randNodeGen).split(/"/)
+    let address = randNodeSplit[3]
+    let account = randNodeSplit[1]
+    return {
+        address,
+        account
+    }
+}
 
+/**
+ *
+ * nodeAddr provides the chosen node that exist in the list of node addresses (file 0.0.101) for grpc calls.
+ * @param {object} account
+ * @param {Array} nodeAddresses
+ * @returns object that contains the node ip and node accountID
+ */
+function nodeAddr(account, nodeAddresses) {
+    let address
+    let retrieveNodeFromList = nodeAddresses.find(obj =>
+        obj.hasOwnProperty(account)
+    )
+    if (isNullOrUndefined(retrieveNodeFromList)) {
+        throw new Error('node does not exist, please choose other nodes')
+    }
+    address = retrieveNodeFromList[account]
     return {
         address,
         account
@@ -82,13 +108,13 @@ function getDuration() {
 
 function signWithKeys(txBodyBytes, ...privateKeysInHex) {
     let privateKeys = []
-    privateKeysInHex.forEach(function (pkInHex) {
+    privateKeysInHex.forEach(function(pkInHex) {
         let privateKeyInBytes = forge.util.hexToBytes(pkInHex)
         privateKeys.push(privateKeyInBytes)
     })
 
     let ed25519Signatures = []
-    privateKeys.forEach(function (pk) {
+    privateKeys.forEach(function(pk) {
         let sig = new Signature()
         let signature = ed25519.sign({
             message: txBodyBytes,
@@ -123,7 +149,36 @@ function parseTx(tx) {
     }
 }
 
+const parseNodeAccountFromTx = msg => {
+    const tx = Transaction.deserializeBinary(msg)
+    const txObj = tx.toObject()
+    const nodeAccountID = txObj.body.nodeaccountid
+    const nodeAccount = new AccountID()
+    nodeAccount.setShardnum(nodeAccountID.shardnum)
+    nodeAccount.setRealmnum(nodeAccountID.realmnum)
+    nodeAccount.setAccountnum(nodeAccountID.accountnum)
+    return nodeAccount
+}
 
+const parseNodeAccountFromQ = msg => {
+    const q = Query.deserializeBinary(msg)
+    const qObj = q.toObject()
+    const qObjKeys = Object.keys(qObj)
+    let qName
+    for (let i = 0; i < qObjKeys.length; i++) {
+        const currentKey = qObjKeys[i]
+        if (qObj[currentKey] !== undefined) {
+            qName = currentKey
+        }
+    }
+    // the node account id is stashed in a different header based on the query name (query type)
+    const nodeAccountID = qObj[qName].header.payment.body.nodeaccountid
+    const nodeAccount = new AccountID()
+    nodeAccount.setShardnum(nodeAccountID.shardnum)
+    nodeAccount.setRealmnum(nodeAccountID.realmnum)
+    nodeAccount.setAccountnum(nodeAccountID.accountnum)
+    return nodeAccount
+}
 
 export default {
     accountIDFromString,
@@ -134,5 +189,7 @@ export default {
     getDuration,
     signWithKeys,
     parseTx,
-    randNodeAddr
+    randNodeAddr,
+    parseNodeAccountFromTx,
+    parseNodeAccountFromQ
 }
