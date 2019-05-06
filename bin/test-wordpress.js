@@ -4,6 +4,7 @@ const forge = require('node-forge')
 const axios = require('axios')
 const path = require('path')
 const fs = require('fs')
+const testdata = require('../src/config/testdata.json')
 // const configPaymentServer = require('../src/config/index')
 const configPaymentServer =
     'http://localhost:9090/?rest_route=/hedera-micropayment/v1/hello'
@@ -29,7 +30,7 @@ console.log('wp', wp)
 let privateKeyBytes = forge.util.hexToBytes(wp.privateKey)
 
 // Use test data here
-let data = {}
+let data = testdata
 
 let message = Buffer.from(JSON.stringify(data))
 
