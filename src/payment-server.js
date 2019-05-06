@@ -107,7 +107,9 @@ io.on('connection', function(socket) {
         }
         // whether our cryptoTransfer succeeds or fails, we want to notify the publisher,
         // for publisher's record
-        if (publisherAPIExists) {
+        console.log(publisherAPIExists())
+        if (publisherAPIExists()) {
+            console.log(resultTx) // what did we pass to our Publisher?
             await publisherAPI(resultTx) // use REST API POST
         } else {
             ioClientPublisher.binary(true).emit(CRYPTOTRANSFER, resultTx) // use socketio
