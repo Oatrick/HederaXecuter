@@ -81,5 +81,5 @@ typings/
 
 dist/
 src/config/*
-!src/config/*js
+!src/config/*.sample
 !src/config/*.json
