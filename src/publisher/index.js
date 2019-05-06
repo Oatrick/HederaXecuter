@@ -1,14 +1,22 @@
 import config from '../config'
+
 import axios from 'axios'
+
+import forge from 'node-forge'
+
+const ed25519 = forge.pki.ed25519
 
 const env = process.env.NODE_ENV
 
 const PUBLISHER_API_SECRET = `${config[env].PUBLISHER_API_SECRET}`
+
 const PUBLISHER_API_POST = `${config[env].PUBLISHER_API_POST}`
+
 const PUBLISHER_SERVER = `${config[env].PUBLISHER_SERVER}`
+
 const API = `${PUBLISHER_SERVER}${PUBLISHER_API_POST}`
 
-function publisherAPIExists() {
+const publisherAPIExists = () => {
     if (config[env] === undefined) {
         return false
     }
@@ -19,19 +27,39 @@ function publisherAPIExists() {
 }
 
 // Does our publisher API support REST API POST?
-async function publisherAPI(data) {
+const publisherAPI = async data => {
+    const authorization = signDataAndReturnAuthorization(data)
+
     try {
         let headers = {
             'Content-Type': 'application/json',
-            authorization: PUBLISHER_API_SECRET
+
+            authorization
         }
         let res = await axios.post(API, data, {
             headers
         })
-        console.log(`PUBLISHER RESPONE FROM ${API}`, res.status)
+        console.log(`PUBLISHER RESPONSE FROM ${API}`, res.status)
     } catch (e) {
         console.log(`PUBLISHER ERROR from ${API}`, e)
     }
+}
+
+const signDataAndReturnAuthorization = data => {
+    const privateKey = forge.util.hexToBytes(PUBLISHER_API_SECRET) // privateKey bytes
+
+    const message = Buffer.from(JSON.stringify(data))
+
+    const encoding = 'binary'
+
+    const signature = ed25519.sign({
+        message,
+        encoding,
+        privateKey
+    })
+    const signatureHex = forge.util.bytesToHex(signature)
+
+    return 'Bearer ' + signatureHex
 }
 
 export { publisherAPI, publisherAPIExists }
