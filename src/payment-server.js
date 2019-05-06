@@ -93,10 +93,14 @@ io.on('connection', function(socket) {
 
         // make the gRPC call (we can't use try-catch here)
         let result = await client.cryptoTransferProxy(data)
+
+        // resultTx is prepared for publisher and for portal
+        // responseData is prepared for hedera-browser-extension
         responseData = result.responseData
         tx = result.tx
         let resultTx = Hedera.parseTx(tx)
-        data.nodePrecheckcode = responseData.nodePrecheckcode
+        resultTx.nodePrecheckcode = responseData.nodePrecheckcode
+
         // successful cryptoTransfer, so perform additional tasks
         if (responseData.nodePrecheckcode === 0) {
             await portalReward(resultTx) // reward the account

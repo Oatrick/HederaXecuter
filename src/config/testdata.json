@@ -1,9 +1,7 @@
 {
-    "accountID": "0.0.1001",
-    "amount": 5000,
-    "created": 1557116912149,
-    "host": "http://localhost:9090",
-    "path": "/",
-    "receipt": true,
-    "transactionId": "0.0.1001@1557116906.47011"
+    "transactionId": "0.0.1001@1557116906.47011",
+    "account": "0.0.1001",
+    "memo": "383,1",
+    "cost": 5000,
+    "nodePrecheckcode": 0
 }
