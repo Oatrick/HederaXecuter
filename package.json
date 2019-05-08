@@ -12,7 +12,8 @@
         "node-forge": "^0.7.6",
         "pg": "^7.4.3",
         "pm2": "^3.4.0",
-        "socket.io": "^2.1.1"
+        "socket.io": "^2.2.0",
+        "socket.io-client": "^2.2.0"
     },
     "scripts": {
         "mock": "NODE_ENV=mock nodemon app.js --exec babel-node",
@@ -23,6 +24,8 @@
         "stop": "pm2 stop app.json",
         "logs": "pm2 logs",
         "build": "babel -d ./dist ./src -s",
+        "dev-webpack": "rm -rf dist && webpack --config webpack.development.config.babel.js",
+        "dev:nodemon": "NODE_ENV=development nodemon dist/app.js",
         "test": "jest"
     },
     "bin": {
@@ -54,7 +57,13 @@
         "@babel/runtime": "^7.4.4",
         "babel-core": "^7.0.0-bridge.0",
         "babel-jest": "^24.7.1",
+        "babel-loader": "^8.0.5",
+        "copy-webpack-plugin": "^5.0.3",
         "jest": "^24.7.1",
-        "nodemon": "^1.18.7"
+        "nodemon": "^1.18.7",
+        "webpack": "^4.30.0",
+        "webpack-cli": "^3.3.2",
+        "webpack-node-externals": "^1.7.2",
+        "webpack-shell-plugin": "^0.5.0"
     }
 }
