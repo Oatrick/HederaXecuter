@@ -12,7 +12,9 @@
         "build:production": "webpack --config webpack.production.config.babel.js",
         "stop": "pm2 stop app.json",
         "logs": "pm2 logs",
-        "test": "jest"
+        "test": "jest",
+        "docker:build:production": "docker build -t hedera-payment-server:latest .",
+        "docker:production": "docker run --name hedera-payment-server -d -p 127.0.0.1:8099:8099 -e TZ=$TZ hedera-payment-server:latest"
     },
     "bin": {
         "create-token": "bin/create-token.js",
@@ -37,6 +39,7 @@
     "dependencies": {
         "axios": "^0.18.0",
         "debug": "^4.1.1",
+        "dotenv": "^8.0.0",
         "express": "^4.16.4",
         "google-protobuf": "^3.8.0-rc.1",
         "grpc": "^1.20.3",
