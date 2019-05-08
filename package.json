@@ -13,8 +13,10 @@
         "stop": "pm2 stop app.json",
         "logs": "pm2 logs",
         "test": "jest",
-        "docker:build:production": "docker build -t hedera-payment-server:latest .",
-        "docker:production": "docker run --name hedera-payment-server -d -p 127.0.0.1:8099:8099 --env-file .env hedera-payment-server:latest"
+        "docker:staging:build": "docker build -f ps-staging.Dockerfile -t hedera-payment-server-staging:latest .",
+        "docker:staging": "docker run --name=hedera-payment-server-staging -d -p 127.0.0.1:8099:8099 --env-file=.env.staging hedera-payment-server-staging:latest",
+        "docker:production:build": "docker build -f ps-production.Dockerfile -t hedera-payment-server:latest .",
+        "docker:production": "docker run --name=hedera-payment-server -d -p 127.0.0.1:8099:8099 --env-file=.env hedera-payment-server:latest"
     },
     "bin": {
         "create-token": "bin/create-token.js",
