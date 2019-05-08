@@ -14,7 +14,7 @@
         "logs": "pm2 logs",
         "test": "jest",
         "docker:build:production": "docker build -t hedera-payment-server:latest .",
-        "docker:production": "docker run --name hedera-payment-server -d -p 127.0.0.1:8099:8099 -e TZ=$TZ hedera-payment-server:latest"
+        "docker:production": "docker run --name hedera-payment-server -d -p 127.0.0.1:8099:8099 --env-file .env hedera-payment-server:latest"
     },
     "bin": {
         "create-token": "bin/create-token.js",
