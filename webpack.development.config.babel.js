@@ -1,15 +1,22 @@
 import common from './webpack.common.config.babel'
 import merge from 'webpack-merge'
-import WebpackShellPlugin from 'webpack-shell-plugin'
+import { exec } from 'child_process'
 
 let developmentConfig = {
     mode: 'development',
     devtool: 'source-map',
     watch: true,
     plugins: [
-        new WebpackShellPlugin({
-            onBuildEnd: ['npm run dev:nodemon']
-        })
+        {
+            apply: compiler => {
+                compiler.hooks.afterEmit.tap('AfterEmitPlugin', compilation => {
+                    exec('npm run dev:debug', (err, stdout, stderr) => {
+                        if (stdout) process.stdout.write(stdout)
+                        if (stderr) process.stderr.write(stderr)
+                    })
+                })
+            }
+        }
     ]
 }
 

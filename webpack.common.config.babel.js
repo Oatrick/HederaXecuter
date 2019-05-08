@@ -1,6 +1,7 @@
 import path from 'path'
 import nodeExternals from 'webpack-node-externals'
 import CopyWebpackPlugin from 'copy-webpack-plugin'
+import CleanWebpackPlugin from 'clean-webpack-plugin'
 
 export default {
     entry: {
@@ -31,7 +32,8 @@ export default {
                 to: 'index.html',
                 toType: 'file'
             }
-        ])
+        ]),
+        new CleanWebpackPlugin()
     ],
     node: {
         // Need this when working with express, otherwise the build fails

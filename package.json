@@ -2,29 +2,16 @@
     "name": "payment-server",
     "version": "1.0.0",
     "description": "Server that receives transaction requests (micro payments, balance request, etc) and forwards them to Hedera",
-    "dependencies": {
-        "@babel/node": "^7.2.2",
-        "axios": "^0.18.0",
-        "debug": "^4.1.1",
-        "express": "^4.16.4",
-        "google-protobuf": "^3.8.0-rc.1",
-        "grpc": "^1.20.3",
-        "node-forge": "^0.7.6",
-        "pg": "^7.4.3",
-        "pm2": "^3.4.0",
-        "socket.io": "^2.2.0",
-        "socket.io-client": "^2.2.0"
-    },
     "scripts": {
-        "mock": "NODE_ENV=mock nodemon app.js --exec babel-node",
-        "dev": "rm -rf dist && webpack --config webpack.development.config.babel.js",
-        "dev:nodemon": "NODE_ENV=development nodemon dist/app.js",
-        "staging-dev": "NODE_ENV=staging nodemon app.js --exec babel-node",
-        "staging": "pm2 start app.json --env staging",
-        "production": "pm2 start app.json --env production",
+        "dev": "webpack --config webpack.development.config.babel.js",
+        "staging": "npm run build:staging && pm2 start app.json --env staging",
+        "production": "npm run build:production && pm2 start app.json --env production",
+        "dev:debug": "NODE_ENV=development nodemon dist/app.js",
+        "staging:debug": "NODE_ENV=staging nodemon dist/app.js",
+        "build:staging": "webpack --config webpack.staging.config.babel.js",
+        "build:production": "webpack --config webpack.production.config.babel.js",
         "stop": "pm2 stop app.json",
         "logs": "pm2 logs",
-        "build": "webpack --config webpack.production.config.babel.js",
         "test": "jest"
     },
     "bin": {
@@ -47,9 +34,22 @@
         }
     ],
     "license": "Apache-2.0",
+    "dependencies": {
+        "axios": "^0.18.0",
+        "debug": "^4.1.1",
+        "express": "^4.16.4",
+        "google-protobuf": "^3.8.0-rc.1",
+        "grpc": "^1.20.3",
+        "node-forge": "^0.7.6",
+        "pg": "^7.4.3",
+        "pm2": "^3.4.0",
+        "socket.io": "^2.2.0",
+        "socket.io-client": "^2.2.0"
+    },
     "devDependencies": {
         "@babel/cli": "^7.4.4",
         "@babel/core": "^7.4.4",
+        "@babel/node": "^7.2.2",
         "@babel/plugin-transform-runtime": "^7.4.4",
         "@babel/preset-env": "^7.4.4",
         "@babel/register": "^7.4.4",
@@ -57,13 +57,13 @@
         "babel-core": "^7.0.0-bridge.0",
         "babel-jest": "^24.7.1",
         "babel-loader": "^8.0.5",
+        "clean-webpack-plugin": "^2.0.2",
         "copy-webpack-plugin": "^5.0.3",
         "jest": "^24.7.1",
         "nodemon": "^1.18.7",
         "webpack": "^4.30.0",
         "webpack-cli": "^3.3.2",
         "webpack-merge": "^4.2.1",
-        "webpack-node-externals": "^1.7.2",
-        "webpack-shell-plugin": "^0.5.0"
+        "webpack-node-externals": "^1.7.2"
     }
 }
