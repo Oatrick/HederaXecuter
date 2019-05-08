@@ -17,15 +17,14 @@
     },
     "scripts": {
         "mock": "NODE_ENV=mock nodemon app.js --exec babel-node",
-        "dev": "NODE_ENV=development nodemon app.js --exec babel-node",
+        "dev": "rm -rf dist && webpack --config webpack.development.config.babel.js",
+        "dev:nodemon": "NODE_ENV=development nodemon dist/app.js",
         "staging-dev": "NODE_ENV=staging nodemon app.js --exec babel-node",
         "staging": "pm2 start app.json --env staging",
         "production": "pm2 start app.json --env production",
         "stop": "pm2 stop app.json",
         "logs": "pm2 logs",
-        "build": "babel -d ./dist ./src -s",
-        "dev-webpack": "rm -rf dist && webpack --config webpack.development.config.babel.js",
-        "dev:nodemon": "NODE_ENV=development nodemon dist/app.js",
+        "build": "webpack --config webpack.production.config.babel.js",
         "test": "jest"
     },
     "bin": {
@@ -34,7 +33,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git@github.com/hashgraph/micropayments.git"
+        "url": "git@github.com/hashgraph/payment-server.git"
     },
     "contributors": [
         {
@@ -63,6 +62,7 @@
         "nodemon": "^1.18.7",
         "webpack": "^4.30.0",
         "webpack-cli": "^3.3.2",
+        "webpack-merge": "^4.2.1",
         "webpack-node-externals": "^1.7.2",
         "webpack-shell-plugin": "^0.5.0"
     }
