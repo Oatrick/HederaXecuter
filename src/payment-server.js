@@ -4,6 +4,7 @@ import path from 'path'
 
 import ioServer from 'socket.io'
 import ioClient from 'socket.io-client'
+import redis from 'socket.io-redis'
 
 import config from './config'
 
@@ -33,6 +34,15 @@ const FILEGETCONTENTS = enumKeyByValue(Q, Q.FILEGETCONTENTS)
 const app = express()
 const server = http.createServer(app)
 const io = ioServer().listen(server)
+
+// when we are not using docker, redis config defaults to this
+let redisConfig = { host: '127.0.0.1', port: 6379 }
+if (process.env.DOCKER === true) {
+    // use environment variable DOCKER=true to denote that
+    // we are running as docker
+    redisConfig = { host: 'redis', port: 6379 }
+}
+io.adapter(redis(redisConfig))
 
 let hedera = new Hedera.Client()
 
