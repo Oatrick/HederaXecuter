@@ -5,6 +5,7 @@ import path from 'path'
 import ioServer from 'socket.io'
 import ioClient from 'socket.io-client'
 import redis from 'socket.io-redis'
+import sticky from 'socketio-sticky-session'
 
 import config from './config'
 
@@ -14,6 +15,7 @@ import { TransactionBody } from './hedera/pbnode/Transaction_pb'
 import { enumKeyByValue } from './hedera/utils'
 import portalReward from './portal'
 import { publisherAPIExists, publisherAPI } from './publisher'
+
 const env = process.env.NODE_ENV
 
 // on staging, PUBLISHER_SERVER is https://thetimesta.mp
@@ -30,6 +32,15 @@ const Q = Query.QueryCase
 const CRYPTOGETACCOUNTBALANCE = enumKeyByValue(Q, Q.CRYPTOGETACCOUNTBALANCE)
 const TRANSACTIONGETRECEIPT = enumKeyByValue(Q, Q.TRANSACTIONGETRECEIPT)
 const FILEGETCONTENTS = enumKeyByValue(Q, Q.FILEGETCONTENTS)
+
+const stickyOptions = {
+    proxy: true,
+    header: 'x-forwarded-for',
+    sync: {
+        isSynced: true,
+        event: CRYPTOTRANSFER
+    }
+}
 
 const app = express()
 const server = http.createServer(app)
@@ -53,11 +64,11 @@ app.get('/', (req, res) => {
 
 // socketio client to publisher's socketio server
 let ioClientPublisher = ioClient(PUBLISHER_SERVER)
-ioClientPublisher.on('connect', function () {
+ioClientPublisher.on('connect', function() {
     console.log(`Connected to ${PUBLISHER_SERVER} SocketIO Server`)
 })
 
-io.on('connection', function (socket) {
+io.on('connection', function(socket) {
     let clientID = socket.id
     let clientIP = socket.handshake.address
     console.log('User-Client Connected!: IP: ' + clientIP)
@@ -66,7 +77,7 @@ io.on('connection', function (socket) {
     // once Hedera implements grpc-web support
 
     // CRYPTOGETACCOUNTBALANCE
-    socket.on(CRYPTOGETACCOUNTBALANCE, async function (data) {
+    socket.on(CRYPTOGETACCOUNTBALANCE, async function(data) {
         console.log(CRYPTOGETACCOUNTBALANCE, clientID, data)
         let client = hedera.withNodeFromQ(data).connect()
         let responseData
@@ -82,7 +93,7 @@ io.on('connection', function (socket) {
     })
 
     // TRANSACTIONGETRECEIPT
-    socket.on(TRANSACTIONGETRECEIPT, async function (data) {
+    socket.on(TRANSACTIONGETRECEIPT, async function(data) {
         let client = hedera.withNodeFromQ(data).connect()
         let responseData
         try {
@@ -97,7 +108,7 @@ io.on('connection', function (socket) {
     })
 
     // CRYPTOTRANSFER
-    socket.on(CRYPTOTRANSFER, async function (data) {
+    socket.on(CRYPTOTRANSFER, async function(data) {
         let responseData, tx
         let client = hedera.withNodeFromTx(data).connect()
 
@@ -130,7 +141,7 @@ io.on('connection', function (socket) {
     })
 
     // CONTRACTCALL
-    socket.on(CONTRACTCALL, async function (data) {
+    socket.on(CONTRACTCALL, async function(data) {
         console.log(CONTRACTCALL, clientID, data)
         let client = hedera.withNodeFromTx(data).connect()
         let responseData
@@ -144,7 +155,7 @@ io.on('connection', function (socket) {
     })
 
     // FILEGETCONTENTS
-    socket.on(FILEGETCONTENTS, async function (data) {
+    socket.on(FILEGETCONTENTS, async function(data) {
         console.log(FILEGETCONTENTS, clientID, data)
         let client = hedera.withNodeFromQ(msg).connect()
         let responseData
@@ -157,7 +168,7 @@ io.on('connection', function (socket) {
         socket.binary(true).emit(`${FILEGETCONTENTS}_RESPONSE`, responseData)
     })
 
-    socket.on('disconnect', function (data) {
+    socket.on('disconnect', function(data) {
         if (env !== 'test') console.log(clientID + ' has disconnected')
     })
 })
