@@ -11,10 +11,11 @@ import { TransactionReceipt } from './pbnode/TransactionReceipt_pb'
 import i from './internal'
 import { ResponseCodeEnum } from './pbnode/ResponseCode_pb'
 import { AccountID, FileID, ContractID } from './pbnode/BasicTypes_pb'
+import logger from '../logger'
 
 // txID is the transaction ID that we are asking receipt for
 function getTransactionReceipts(self, txID) {
-    console.log('getTransactionReceipts')
+    logger.info('getTransactionReceipts')
 
     let txBody = new TransactionBody()
     txBody.setTransactionid(txID)
@@ -42,9 +43,9 @@ function getTransactionReceipts(self, txID) {
     q.setTransactiongetreceipt(transactionGetReceiptQuery)
 
     // make the request
-    self.clientCrypto.getTransactionReceipts(q, function (err, res) {
-        console.log(err)
-        // console.log('Get Transaction Receipt', res)
+    self.clientCrypto.getTransactionReceipts(q, function(err, res) {
+        logger.error(err)
+        logger.info('Get Transaction Receipt', res)
     })
 }
 
@@ -77,7 +78,6 @@ async function getTransactionReceiptsProxy(self, data, retries = 10) {
         retries = retries - 1
     }
 
-    // console.log('responseData:', responseData)
     return responseData
 }
 
@@ -119,7 +119,6 @@ function prepareResponseData(response) {
 
 function getTxReceiptsResponseType(res) {
     let r = Response.toObject(true, res)
-    // console.log('r', r)
     let responseHeader = new ResponseHeader()
     responseHeader.setNodetransactionprecheckcode(
         r.transactiongetreceipt.header.nodetransactionprecheckcode

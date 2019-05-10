@@ -7,6 +7,7 @@ import ioClient from 'socket.io-client'
 import redis from 'socket.io-redis'
 
 import config from './config'
+import logger from './logger'
 
 import Hedera from './hedera'
 import { Query } from './hedera/pbnode/Query_pb'
@@ -53,51 +54,50 @@ app.get('/', (req, res) => {
 
 // socketio client to publisher's socketio server
 let ioClientPublisher = ioClient(PUBLISHER_SERVER)
-ioClientPublisher.on('connect', function () {
-    console.log(`Connected to ${PUBLISHER_SERVER} SocketIO Server`)
+ioClientPublisher.on('connect', function() {
+    logger.info(`Connected to ${PUBLISHER_SERVER} SocketIO Server`)
 })
 
-io.on('connection', function (socket) {
+io.on('connection', function(socket) {
     let clientID = socket.id
     let clientIP = socket.handshake.address
-    console.log('User-Client Connected!: IP: ' + clientIP)
+    logger.info('User-Client Connected!: IP: ' + clientIP)
 
     // Note: balance request can be directly handled by Hedera chrome extension with grpc-web
     // once Hedera implements grpc-web support
 
     // CRYPTOGETACCOUNTBALANCE
-    socket.on(CRYPTOGETACCOUNTBALANCE, async function (data) {
-        console.log(CRYPTOGETACCOUNTBALANCE, clientID, data)
+    socket.on(CRYPTOGETACCOUNTBALANCE, async function(data) {
+        logger.info(CRYPTOGETACCOUNTBALANCE, clientID, data)
         let client = hedera.withNodeFromQ(data).connect()
         let responseData
         try {
             responseData = await client.getAccountBalanceProxy(data)
         } catch (e) {
-            console.log(e)
+            logger.error(e)
         }
-        console.log(`${CRYPTOGETACCOUNTBALANCE}_RESPONSE`, responseData)
+        logger.info(`${CRYPTOGETACCOUNTBALANCE}_RESPONSE`, responseData)
         socket
             .binary(true)
             .emit(`${CRYPTOGETACCOUNTBALANCE}_RESPONSE`, responseData)
     })
 
     // TRANSACTIONGETRECEIPT
-    socket.on(TRANSACTIONGETRECEIPT, async function (data) {
+    socket.on(TRANSACTIONGETRECEIPT, async function(data) {
         let client = hedera.withNodeFromQ(data).connect()
         let responseData
         try {
             responseData = await client.getTransactionReceiptsProxy(data)
         } catch (e) {
-            console.log(e)
+            logger.error(e)
         }
-        // console.log(`${TRANSACTIONGETRECEIPT}_RESPONSE`, responseData)
         socket
             .binary(true)
             .emit(`${TRANSACTIONGETRECEIPT}_RESPONSE`, responseData)
     })
 
     // CRYPTOTRANSFER
-    socket.on(CRYPTOTRANSFER, async function (data) {
+    socket.on(CRYPTOTRANSFER, async function(data) {
         let responseData, tx
         let client = hedera.withNodeFromTx(data).connect()
 
@@ -117,9 +117,9 @@ io.on('connection', function (socket) {
         }
         // whether our cryptoTransfer succeeds or fails, we want to notify the publisher,
         // for publisher's record
-        console.log(publisherAPIExists())
+        logger.info('publisher API exists', publisherAPIExists())
         if (publisherAPIExists()) {
-            console.log(resultTx) // what did we pass to our Publisher?
+            logger.info(resultTx) // what did we pass to our Publisher?
             await publisherAPI(resultTx) // use REST API POST
         } else {
             ioClientPublisher.binary(true).emit(CRYPTOTRANSFER, resultTx) // use socketio
@@ -130,35 +130,35 @@ io.on('connection', function (socket) {
     })
 
     // CONTRACTCALL
-    socket.on(CONTRACTCALL, async function (data) {
-        console.log(CONTRACTCALL, clientID, data)
+    socket.on(CONTRACTCALL, async function(data) {
+        logger.info(CONTRACTCALL, clientID, data)
         let client = hedera.withNodeFromTx(data).connect()
         let responseData
         try {
             responseData = await client.contractCallProxy(data)
         } catch (e) {
-            console.log(e)
+            logger.error(e)
         }
-        console.log(`${CONTRACTCALL}_RESPONSE`, responseData)
+        logger.info(`${CONTRACTCALL}_RESPONSE`, responseData)
         socket.binary(true).emit(`${CONTRACTCALL}_RESPONSE`, responseData)
     })
 
     // FILEGETCONTENTS
-    socket.on(FILEGETCONTENTS, async function (data) {
-        console.log(FILEGETCONTENTS, clientID, data)
+    socket.on(FILEGETCONTENTS, async function(data) {
+        logger.info(FILEGETCONTENTS, clientID, data)
         let client = hedera.withNodeFromQ(msg).connect()
         let responseData
         try {
             responseData = await client.fileGetContentsProxy(data)
         } catch (e) {
-            console.log(e)
+            logger.error(e)
         }
-        console.log(`${FILEGETCONTENTS}_RESPONSE`, responseData)
+        logger.info(`${FILEGETCONTENTS}_RESPONSE`, responseData)
         socket.binary(true).emit(`${FILEGETCONTENTS}_RESPONSE`, responseData)
     })
 
-    socket.on('disconnect', function (data) {
-        if (env !== 'test') console.log(clientID + ' has disconnected')
+    socket.on('disconnect', function(data) {
+        if (env !== 'test') logger.info(clientID + ' has disconnected')
     })
 })
 

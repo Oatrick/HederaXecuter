@@ -4,16 +4,10 @@ import {
     TransferList,
     CryptoTransferTransactionBody
 } from './pbnode/CryptoTransfer_pb'
-import {
-    TransactionID
-} from './pbnode/BasicTypes_pb'
-import {
-    TransactionBody,
-    Transaction
-} from './pbnode/Transaction_pb'
-import {
-    TransactionResponse
-} from './pbnode/TransactionResponse_pb'
+import { TransactionID } from './pbnode/BasicTypes_pb'
+import { TransactionBody, Transaction } from './pbnode/Transaction_pb'
+import { TransactionResponse } from './pbnode/TransactionResponse_pb'
+import logger from '../logger'
 
 // self refers to the instance of Hedera (Hedera object).
 // senderAccount refers to the paying account. It is a string delimited by dot.
@@ -22,14 +16,16 @@ import {
 function cryptoTransfer(self, senderAccount, recipientAccount, amount) {
     if (self.operator === undefined) {
         // operator (e.g. the current account that's paying)
-        console.log(
+        logger.warn(
             'please set the operator who will pay for this transaction before calling getAccountBalance'
         )
         return
     }
     // node fees will be implemented subsequently
     let fee = 0
-    console.log(`transfer ${amount} tinybars from ${senderAccount} to ${recipientAccount}`)
+    logger.info(
+        `transfer ${amount} tinybars from ${senderAccount} to ${recipientAccount}`
+    )
     let accountAmountSender = new AccountAmount()
     accountAmountSender.setAccountid(i.accountIDFromString(senderAccount))
     accountAmountSender.setAmount(amount)
@@ -68,8 +64,8 @@ function cryptoTransfer(self, senderAccount, recipientAccount, amount) {
     tx.setCryptotransfer(cryptoTransferTransactionBody)
 
     // make the transaction request
-    self.clientCrypto.cryptoTransfer(tx, function (err, response) {
-        console.log(err)
+    self.clientCrypto.cryptoTransfer(tx, function(err, response) {
+        logger.error(err)
     })
 }
 
@@ -130,7 +126,4 @@ async function cryptoTransferPromise(self, tx) {
     })
 }
 
-export {
-    cryptoTransfer,
-    cryptoTransferProxy
-}
+export { cryptoTransfer, cryptoTransferProxy }
