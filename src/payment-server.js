@@ -37,10 +37,10 @@ const io = ioServer().listen(server)
 
 // when we are not using docker, redis config defaults to this
 let redisConfig = { host: '127.0.0.1', port: 6379 }
-if (process.env.DOCKER === true) {
+if (process.env.REDIS_HOST != null) {
     // use environment variable DOCKER=true to denote that
     // we are running as docker
-    redisConfig = { host: 'redis', port: 6379 }
+  redisConfig = { host: process.env.REDIS_HOST, password: process.env.REDIS_PASSWORD, port: 6379 }
 }
 io.adapter(redis(redisConfig))
 
