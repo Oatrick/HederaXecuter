@@ -39,8 +39,16 @@ const FILEGETCONTENTS = enumKeyByValue(Q, Q.FILEGETCONTENTS)
 const createServer = () => {
     const app = express()
     const server = http.createServer(app)
-    const io = ioServer().listen(server)
-    const redisServer = redis({ host: 'localhost', port: 6379 })
+  const io = ioServer().listen(server)
+
+  let REDIS_HOST = process.env.REDIS_HOST
+  let redisServer = null;
+  if(REDIS_HOST == undefined){
+    redisServer = redis({ host: 'localhost', port: 6379 })
+  }else{
+    redisServer = redis({ host: REDIS_HOST, port: 6379 })
+
+  }
     io.adapter(redisServer)
 
     let hedera = new Hedera.Client()
