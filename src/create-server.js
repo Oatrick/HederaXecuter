@@ -4,6 +4,7 @@ import path from 'path'
 
 import ioServer from 'socket.io'
 import ioClient from 'socket.io-client'
+import redis from 'socket.io-redis'
 
 import config from './config'
 
@@ -39,6 +40,8 @@ const createServer = () => {
     const app = express()
     const server = http.createServer(app)
     const io = ioServer().listen(server)
+    const redisServer = redis({ host: 'localhost', port: 6379 })
+    io.adapter(redisServer)
 
     let hedera = new Hedera.Client()
 
