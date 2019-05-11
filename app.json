@@ -3,7 +3,8 @@
         {
             "name": "payment-server",
             "script": "dist/app.js",
-            "exec_mode": "cluster",
+            "exec_interpreter": "node",
+            "exec_mode": "fork",
             "instances": 4,
             "env_staging": {
                 "NODE_ENV": "staging"
