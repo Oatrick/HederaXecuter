@@ -8,12 +8,18 @@ import createServer from './create-server'
 
 let server
 
-let REDIS_HOST= process.env.REDIS_HOST
+// TODO: we can switch out to using config and ENV_NAME to retrieve our REDIS_HOST and REDIS_PASSWORD from our dot env file
+// import config from './config'
+// let REDIS_HOST = config[ENV_NAME]['REDIS_HOST']
+// let REDIS_PASSWORD = config[ENV_NAME]['REDIS_PASSWORD']
+let REDIS_HOST = process.env.REDIS_HOST
 let REDIS_PASSWORD = process.env.REDIS_PASSWORD
 let REDIS_PORT = 6379
+
 if(REDIS_HOST == undefined){
   REDIS_HOST = "localhost"
 }
+
 if (cluster.isMaster) {
   server = http.createServer()
   const io = ioServer().listen(server)
@@ -29,7 +35,7 @@ if (cluster.isMaster) {
 }
 
 if (cluster.isWorker) {
-  server = createServer()
+    server = createServer()
 }
 
 export default server
