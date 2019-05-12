@@ -1,4 +1,5 @@
 import config from '../config'
+import logger from '../logger'
 
 import axios from 'axios'
 
@@ -34,9 +35,9 @@ const publisherAPI = async data => {
         let res = await axios.post(API, data, {
             headers
         })
-        console.log(`PUBLISHER RESPONSE FROM ${API}`, res.status)
+        logger.info(`PUBLISHER RESPONSE FROM ${API}`, res.status)
     } catch (e) {
-        console.log(`PUBLISHER ERROR from ${API}`, e)
+        logger.error(`PUBLISHER ERROR from ${API}`, e)
     }
 }
 

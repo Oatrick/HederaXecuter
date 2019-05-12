@@ -8,14 +8,15 @@ import { Query } from './pbnode/Query_pb'
 import { Response } from './pbnode/Response_pb'
 import { ResponseHeader } from './pbnode/ResponseHeader_pb'
 import { AccountID } from './pbnode/BasicTypes_pb'
+import logger from '../logger'
 
 // self refers to the instance of Hedera (Hedera object).
 // account refers to the account we are asking the balance from. It is a string delimited by dot.
 function getAccountBalance(self, account) {
-    console.log('getAccountBalance makes a gRPC call to Hedera network')
+    logger.info('getAccountBalance makes a gRPC call to Hedera network')
     if (self.operator === undefined) {
         // operator (e.g. the current account that's paying)
-        console.log(
+        logger.warn(
             'please set the operator who will pay for this transaction before calling getAccountBalance'
         )
         return
@@ -35,7 +36,7 @@ function getAccountBalance(self, account) {
     let cryptoGetAccountBalanceQuery = new CryptoGetAccountBalanceQuery()
     cryptoGetAccountBalanceQuery.setHeader(qHeader)
     cryptoGetAccountBalanceQuery.setAccountid(i.accountIDFromString(account))
-    console.log(
+    logger.info(
         'Our cryptoGetAccountBalanceQuery is',
         cryptoGetAccountBalanceQuery.toObject()
     )
@@ -44,15 +45,15 @@ function getAccountBalance(self, account) {
 
     // make the request
     self.clientCrypto.cryptoGetBalance(q, function(err, response) {
-        console.log(err)
-        console.log('GET BALANCE:', response)
+        logger.error(err)
+        logger.info('GET BALANCE:', response)
     })
 }
 
 async function getAccountBalanceProxy(self, data) {
     let query = Query.deserializeBinary(data)
     let result = await cryptoGetBalancePromise(self, query)
-    console.log('RESULT INSIDE:', result)
+    logger.info('RESULT INSIDE:', result)
     let responseData = {}
     // Hedera network unreachable
     if (result.err === 14) {
@@ -78,7 +79,7 @@ async function getAccountBalanceProxy(self, data) {
 // re-constitute CryptoGetAccountBalanceResponse object from the response object (res) from gRPC callback
 function responseToResponseType(res) {
     let r = Response.toObject(true, res)
-    console.log(r)
+    logger.info(r)
 
     let responseHeader = new ResponseHeader()
     responseHeader.setNodetransactionprecheckcode(

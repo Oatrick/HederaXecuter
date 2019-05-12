@@ -1,5 +1,6 @@
 import axios from 'axios'
 import config from '../config'
+import logger from '../logger'
 
 const env = ENV_NAME
 
@@ -13,10 +14,10 @@ if (PORTAL !== undefined) {
 const PORTAL_TOKEN = config[env].PORTAL_TOKEN
 
 async function portalReward(data) {
-    console.log('REWARD', data)
+    logger.info('REWARD', data)
     try {
         if (PORTAL === undefined) {
-            console.log('PORTAL is not declared, so we skip')
+            logger.info('PORTAL is not declared, so we skip')
             return
         }
         let headers = {
@@ -26,9 +27,9 @@ async function portalReward(data) {
         let res = await axios.post(PORTAL_REWARD_DAILYTIMESTAMP, data, {
             headers
         })
-        console.log(`REWARD RESPONSE from ${PORTAL}`, res.status)
+        logger.info(`REWARD RESPONSE from ${PORTAL}`, res.status)
     } catch (e) {
-        console.log(`REWARD ERROR from ${PORTAL}`, e)
+        logger.error(`REWARD ERROR from ${PORTAL}`, e)
     }
 }
 

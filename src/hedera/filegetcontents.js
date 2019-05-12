@@ -7,6 +7,7 @@ import {
 } from './pbnode/FileGetContents_pb'
 import { FileID } from './pbnode/BasicTypes_pb'
 import i from './internal'
+import logger from '../logger'
 
 async function fileGetContentsProxy(self, data) {
     let q = Query.deserializeBinary(data)
@@ -41,7 +42,7 @@ async function fileGetContentsProxy(self, data) {
 // re-constitute
 function responseToResponseType(res) {
     let r = Response.toObject(true, res)
-    console.log(r)
+    logger.info(r)
 
     let responseHeader = new ResponseHeader()
     responseHeader.setNodetransactionprecheckcode(
