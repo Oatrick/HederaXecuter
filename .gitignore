@@ -60,7 +60,10 @@ typings/
 
 # dotenv environment variables file
 .env
-.env.staging
+.env.*
+.env.local
+.env.*.local
+!.env.sample
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -81,6 +84,4 @@ typings/
 # End of https://www.gitignore.io/api/node
 
 dist/
-src/config/*
-!src/config/*.sample
-!src/config/*.json
+
