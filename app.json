@@ -3,8 +3,7 @@
         {
             "name": "payment-server",
             "script": "dist/app.js",
-            "exec_interpreter": "cluster",
-            "instances": 4,
+            "exec_interpreter": "node",
             "env_staging": {
                 "NODE_ENV": "staging"
             },

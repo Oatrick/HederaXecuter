@@ -1,6 +1,16 @@
+import webpack from 'webpack'
 import common from './webpack.common.config.babel'
 import merge from 'webpack-merge'
 import { exec } from 'child_process'
+import defaults from './src/defaults'
+
+const globals = defaults['development']
+let globalsStringified = {}
+for (var k in globals) {
+    if (globals.hasOwnProperty(k)) {
+        globalsStringified[k] = JSON.stringify(globals[k])
+    }
+}
 
 let developmentConfig = {
     mode: 'development',
@@ -16,7 +26,8 @@ let developmentConfig = {
                     })
                 })
             }
-        }
+        },
+        new webpack.DefinePlugin(globalsStringified)
     ]
 }
 

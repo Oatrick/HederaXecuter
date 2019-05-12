@@ -7,7 +7,7 @@ import forge from 'node-forge'
 
 const ed25519 = forge.pki.ed25519
 
-const env = process.env.NODE_ENV
+const env = ENV_NAME
 
 const PUBLISHER_API_SECRET = `${config[env].PUBLISHER_API_SECRET}`
 const PUBLISHER_API_POST = `${config[env].PUBLISHER_API_POST}`
