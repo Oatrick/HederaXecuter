@@ -4,9 +4,7 @@ import addressBook from './address-book'
 import debug from 'debug'
 
 const log = debug('test:hedera:address')
-test('nodeAddress', () => {
-
-})
+test('nodeAddress', () => {})
 // test('Emulate production environment to see our production node addresses', () => {
 //     // emulating production environment by setting our global ADDRESS_BOOK to be the production address book list
 //     global.ADDRESS_BOOK = addressBook['production']['ADDRESS_BOOK']
@@ -52,7 +50,7 @@ test('nodeAddress', () => {
 // })
 
 // test('looping random node addr', async () => {
-//     log(process.env.NODE_ENV)
+//     log(ENV_NAME)
 //     let address = i.randNodeAddr(ADDRESS_BOOK)
 //     log(address)
 

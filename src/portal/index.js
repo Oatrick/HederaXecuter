@@ -1,7 +1,7 @@
 import axios from 'axios'
 import config from '../config'
 
-const env = process.env.NODE_ENV
+const env = ENV_NAME
 
 // on staging, PORTAL is https://api.dev.portal.hedera.com
 // on production, PORTAL is https://api.portal.hedera.com

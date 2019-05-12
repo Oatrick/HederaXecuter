@@ -15,7 +15,7 @@ import { enumKeyByValue } from './hedera/utils'
 import portalReward from './portal'
 import { publisherAPIExists, publisherAPI } from './publisher'
 
-const env = process.env.NODE_ENV
+const env = ENV_NAME
 
 // on staging, PUBLISHER_SERVER is https://thetimesta.mp
 // on production, PUBLISHER_SERVER is https://dailytimestamp.com
@@ -39,16 +39,15 @@ const FILEGETCONTENTS = enumKeyByValue(Q, Q.FILEGETCONTENTS)
 const createServer = () => {
     const app = express()
     const server = http.createServer(app)
-  const io = ioServer().listen(server)
+    const io = ioServer().listen(server)
 
-  let REDIS_HOST = process.env.REDIS_HOST
-  let redisServer = null;
-  if(REDIS_HOST == undefined){
-    redisServer = redis({ host: 'localhost', port: 6379 })
-  }else{
-    redisServer = redis({ host: REDIS_HOST, port: 6379 })
-
-  }
+    let REDIS_HOST = process.env.REDIS_HOST
+    let redisServer = null
+    if (REDIS_HOST == undefined) {
+        redisServer = redis({ host: 'localhost', port: 6379 })
+    } else {
+        redisServer = redis({ host: REDIS_HOST, port: 6379 })
+    }
     io.adapter(redisServer)
 
     let hedera = new Hedera.Client()

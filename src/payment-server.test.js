@@ -11,7 +11,7 @@ import { Query } from './hedera/pbnode/Query_pb'
 import { enumKeyByValue } from './hedera/utils'
 import testdata from './__setup__/testdata'
 
-const env = process.env.NODE_ENV
+const env = ENV_NAME
 const PORT = 9099
 const MICROPAYMENT_SERVER = config[env].MICROPAYMENT_SERVER
 
