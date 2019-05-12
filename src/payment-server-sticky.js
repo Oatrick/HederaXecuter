@@ -2,24 +2,26 @@ import cluster from 'cluster'
 import http from 'http'
 
 import ioServer from 'socket.io'
-import redis from 'socket.io-redis'
-
+import redisAdapter from 'socket.io-redis'
+import redis from 'redis';
 import createServer from './create-server'
 
 let server
 
 let REDIS_HOST= process.env.REDIS_HOST
 let REDIS_PASSWORD = process.env.REDIS_PASSWORD
-
+let REDIS_PORT = 6379
 if(REDIS_HOST == undefined){
   REDIS_HOST = "localhost"
 }
 if (cluster.isMaster) {
   server = http.createServer()
   const io = ioServer().listen(server)
+  const pub = redis.createClient(REDIS_PORT, REDIS_HOST, { auth_pass: REDIS_PASSWORD });
+  const sub = redis.createClient(REDIS_PORT, REDIS_HOST, { auth_pass: REDIS_PASSWORD });
+  io.adapter(redisAdapter({ pubClient: pub, subClient: sub }));
+
   
-  const redisServer = redis({ host: REDIS_HOST, port: 6379 })
-  io.adapter(redisServer)
 
   cluster.on('exit', (worker, code, signal) => {
     console.log('worker ' + worker.process.pid + ' died')
