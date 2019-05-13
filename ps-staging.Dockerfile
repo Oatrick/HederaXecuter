@@ -16,4 +16,4 @@ RUN npm run build:staging
 # Expose 8099, Hedera Payment server listens on 8099 by default
 EXPOSE 8099
 
-CMD [ "pm2-runtime", "start", "app.json", "--env", "staging" ]
+CMD ["node", "dist/app.js", "--env","staging"]
