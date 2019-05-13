@@ -5,11 +5,11 @@ import ioServer from 'socket.io'
 import createServer from './create-server'
 
 let server
+let io
 
 if (cluster.isMaster) {
-    // TODO: we should not need this at all
     server = http.createServer()
-    const io = ioServer().listen(server)
+    io = ioServer().listen(server)
 
     cluster.on('exit', (worker, code, signal) => {
         console.log('worker ' + worker.process.pid + ' died')
@@ -17,7 +17,9 @@ if (cluster.isMaster) {
 }
 
 if (cluster.isWorker) {
-    server = createServer()
+    let serverAndIo = createServer()
+    server = serverAndIo.server
+    io = serverAndIo.io
 }
 
-export default server
+export default { server, io }

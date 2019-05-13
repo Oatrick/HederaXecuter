@@ -160,7 +160,7 @@ const createServer = () => {
         })
     })
 
-    return server
+    return { server, io }
 }
 
 export default createServer
