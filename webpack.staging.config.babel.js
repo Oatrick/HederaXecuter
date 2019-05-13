@@ -11,6 +11,11 @@ for (var k in globals) {
     }
 }
 
+// we want to build our app in production mode,
+// but webpack will assume NODE_ENV to be production;
+// declaring NODE_ENV=staging before running the app
+// will not override this
+// so, we need to introduce ENV_NAME
 let stagingConfig = {
     mode: 'production',
     plugins: [new webpack.DefinePlugin(globalsStringified)]

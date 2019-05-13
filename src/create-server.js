@@ -4,7 +4,8 @@ import path from 'path'
 
 import ioServer from 'socket.io'
 import ioClient from 'socket.io-client'
-import redis from 'socket.io-redis'
+import redisAdapter from 'socket.io-redis'
+import redis from 'redis';
 
 import config from './config'
 
@@ -37,140 +38,145 @@ const FILEGETCONTENTS = enumKeyByValue(Q, Q.FILEGETCONTENTS)
  * @returns {object}
  */
 const createServer = () => {
-    const app = express()
-    const server = http.createServer(app)
-    const io = ioServer().listen(server)
+  const app = express()
+  const server = http.createServer(app)
+  const io = ioServer().listen(server)
 
-    let REDIS_HOST = process.env.REDIS_HOST
-    let redisServer = null
-    if (REDIS_HOST == undefined) {
-        redisServer = redis({ host: 'localhost', port: 6379 })
-    } else {
-        redisServer = redis({ host: REDIS_HOST, port: 6379 })
-    }
+  let REDIS_HOST = process.env.REDIS_HOST
+  let REDIS_PASSWORD = process.env.REDIS_PASSWORD
+  let REDIS_PORT = 6379
+
+  if (REDIS_HOST == undefined) {
+    let redisServer = redisAdapter({ host: 'localhost', port: 6379 })
     io.adapter(redisServer)
 
-    let hedera = new Hedera.Client()
+  } else {
+    const pub = redis.createClient(REDIS_PORT, REDIS_HOST, { auth_pass: REDIS_PASSWORD });
+    const sub = redis.createClient(REDIS_PORT, REDIS_HOST, { auth_pass: REDIS_PASSWORD });
+    io.adapter(redisAdapter({ pubClient: pub, subClient: sub }));
+  }
 
-    // just a blank page
-    app.get('/', (req, res) => {
-        res.sendFile(path.join(__dirname, 'index.html'))
+  let hedera = new Hedera.Client()
+
+  // just a blank page
+  app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'))
+  })
+
+  // socketio client to publisher's socketio server
+  let ioClientPublisher = ioClient(PUBLISHER_SERVER)
+  ioClientPublisher.on('connect', function() {
+    console.log(`Connected to ${PUBLISHER_SERVER} SocketIO Server`)
+  })
+
+  io.on('connection', function(socket) {
+    let clientID = socket.id
+    let clientIP = socket.handshake.address
+    console.log('User-Client Connected!: IP: ' + clientIP)
+
+    // Note: balance request can be directly handled by Hedera chrome extension with grpc-web
+    // once Hedera implements grpc-web support
+
+    // CRYPTOGETACCOUNTBALANCE
+    socket.on(CRYPTOGETACCOUNTBALANCE, async function(data) {
+      console.log(CRYPTOGETACCOUNTBALANCE, clientID, data)
+      let client = hedera.withNodeFromQ(data).connect()
+      let responseData
+      try {
+        responseData = await client.getAccountBalanceProxy(data)
+      } catch (e) {
+        console.log(e)
+      }
+      console.log(`${CRYPTOGETACCOUNTBALANCE}_RESPONSE`, responseData)
+      socket
+        .binary(true)
+        .emit(`${CRYPTOGETACCOUNTBALANCE}_RESPONSE`, responseData)
     })
 
-    // socketio client to publisher's socketio server
-    let ioClientPublisher = ioClient(PUBLISHER_SERVER)
-    ioClientPublisher.on('connect', function() {
-        console.log(`Connected to ${PUBLISHER_SERVER} SocketIO Server`)
+    // TRANSACTIONGETRECEIPT
+    socket.on(TRANSACTIONGETRECEIPT, async function(data) {
+      let client = hedera.withNodeFromQ(data).connect()
+      let responseData
+      try {
+        responseData = await client.getTransactionReceiptsProxy(data)
+      } catch (e) {
+        console.log(e)
+      }
+      // console.log(`${TRANSACTIONGETRECEIPT}_RESPONSE`, responseData)
+      socket
+        .binary(true)
+        .emit(`${TRANSACTIONGETRECEIPT}_RESPONSE`, responseData)
     })
 
-    io.on('connection', function(socket) {
-        let clientID = socket.id
-        let clientIP = socket.handshake.address
-        console.log('User-Client Connected!: IP: ' + clientIP)
+    // CRYPTOTRANSFER
+    socket.on(CRYPTOTRANSFER, async function(data) {
+      let responseData, tx
+      let client = hedera.withNodeFromTx(data).connect()
 
-        // Note: balance request can be directly handled by Hedera chrome extension with grpc-web
-        // once Hedera implements grpc-web support
+      // make the gRPC call (we can't use try-catch here)
+      let result = await client.cryptoTransferProxy(data)
 
-        // CRYPTOGETACCOUNTBALANCE
-        socket.on(CRYPTOGETACCOUNTBALANCE, async function(data) {
-            console.log(CRYPTOGETACCOUNTBALANCE, clientID, data)
-            let client = hedera.withNodeFromQ(data).connect()
-            let responseData
-            try {
-                responseData = await client.getAccountBalanceProxy(data)
-            } catch (e) {
-                console.log(e)
-            }
-            console.log(`${CRYPTOGETACCOUNTBALANCE}_RESPONSE`, responseData)
-            socket
-                .binary(true)
-                .emit(`${CRYPTOGETACCOUNTBALANCE}_RESPONSE`, responseData)
-        })
+      // resultTx is prepared for publisher and for portal
+      // responseData is prepared for hedera-browser-extension
+      responseData = result.responseData
+      tx = result.tx
+      let resultTx = Hedera.parseTx(tx)
+      resultTx.nodePrecheckcode = responseData.nodePrecheckcode
 
-        // TRANSACTIONGETRECEIPT
-        socket.on(TRANSACTIONGETRECEIPT, async function(data) {
-            let client = hedera.withNodeFromQ(data).connect()
-            let responseData
-            try {
-                responseData = await client.getTransactionReceiptsProxy(data)
-            } catch (e) {
-                console.log(e)
-            }
-            // console.log(`${TRANSACTIONGETRECEIPT}_RESPONSE`, responseData)
-            socket
-                .binary(true)
-                .emit(`${TRANSACTIONGETRECEIPT}_RESPONSE`, responseData)
-        })
+      // successful cryptoTransfer, so perform additional tasks
+      if (responseData.nodePrecheckcode === 0) {
+        await portalReward(resultTx) // reward the account
+      }
+      // whether our cryptoTransfer succeeds or fails, we want to notify the publisher,
+      // for publisher's record
+      console.log(publisherAPIExists())
+      if (publisherAPIExists()) {
+        console.log(resultTx) // what did we pass to our Publisher?
+        await publisherAPI(resultTx) // use REST API POST
+      } else {
+        ioClientPublisher.binary(true).emit(CRYPTOTRANSFER, resultTx) // use socketio
+      }
 
-        // CRYPTOTRANSFER
-        socket.on(CRYPTOTRANSFER, async function(data) {
-            let responseData, tx
-            let client = hedera.withNodeFromTx(data).connect()
-
-            // make the gRPC call (we can't use try-catch here)
-            let result = await client.cryptoTransferProxy(data)
-
-            // resultTx is prepared for publisher and for portal
-            // responseData is prepared for hedera-browser-extension
-            responseData = result.responseData
-            tx = result.tx
-            let resultTx = Hedera.parseTx(tx)
-            resultTx.nodePrecheckcode = responseData.nodePrecheckcode
-
-            // successful cryptoTransfer, so perform additional tasks
-            if (responseData.nodePrecheckcode === 0) {
-                await portalReward(resultTx) // reward the account
-            }
-            // whether our cryptoTransfer succeeds or fails, we want to notify the publisher,
-            // for publisher's record
-            console.log(publisherAPIExists())
-            if (publisherAPIExists()) {
-                console.log(resultTx) // what did we pass to our Publisher?
-                await publisherAPI(resultTx) // use REST API POST
-            } else {
-                ioClientPublisher.binary(true).emit(CRYPTOTRANSFER, resultTx) // use socketio
-            }
-
-            // response back to client
-            socket.binary(true).emit(`${CRYPTOTRANSFER}_RESPONSE`, responseData)
-        })
-
-        // CONTRACTCALL
-        socket.on(CONTRACTCALL, async function(data) {
-            console.log(CONTRACTCALL, clientID, data)
-            let client = hedera.withNodeFromTx(data).connect()
-            let responseData
-            try {
-                responseData = await client.contractCallProxy(data)
-            } catch (e) {
-                console.log(e)
-            }
-            console.log(`${CONTRACTCALL}_RESPONSE`, responseData)
-            socket.binary(true).emit(`${CONTRACTCALL}_RESPONSE`, responseData)
-        })
-
-        // FILEGETCONTENTS
-        socket.on(FILEGETCONTENTS, async function(data) {
-            console.log(FILEGETCONTENTS, clientID, data)
-            let client = hedera.withNodeFromQ(msg).connect()
-            let responseData
-            try {
-                responseData = await client.fileGetContentsProxy(data)
-            } catch (e) {
-                console.log(e)
-            }
-            console.log(`${FILEGETCONTENTS}_RESPONSE`, responseData)
-            socket
-                .binary(true)
-                .emit(`${FILEGETCONTENTS}_RESPONSE`, responseData)
-        })
-
-        socket.on('disconnect', function(data) {
-            if (env !== 'test') console.log(clientID + ' has disconnected')
-        })
+      // response back to client
+      socket.binary(true).emit(`${CRYPTOTRANSFER}_RESPONSE`, responseData)
     })
 
-    return server
+    // CONTRACTCALL
+    socket.on(CONTRACTCALL, async function(data) {
+      console.log(CONTRACTCALL, clientID, data)
+      let client = hedera.withNodeFromTx(data).connect()
+      let responseData
+      try {
+        responseData = await client.contractCallProxy(data)
+      } catch (e) {
+        console.log(e)
+      }
+      console.log(`${CONTRACTCALL}_RESPONSE`, responseData)
+      socket.binary(true).emit(`${CONTRACTCALL}_RESPONSE`, responseData)
+    })
+
+    // FILEGETCONTENTS
+    socket.on(FILEGETCONTENTS, async function(data) {
+      console.log(FILEGETCONTENTS, clientID, data)
+      let client = hedera.withNodeFromQ(msg).connect()
+      let responseData
+      try {
+        responseData = await client.fileGetContentsProxy(data)
+      } catch (e) {
+        console.log(e)
+      }
+      console.log(`${FILEGETCONTENTS}_RESPONSE`, responseData)
+      socket
+        .binary(true)
+        .emit(`${FILEGETCONTENTS}_RESPONSE`, responseData)
+    })
+
+    socket.on('disconnect', function(data) {
+      if (env !== 'test') console.log(clientID + ' has disconnected')
+    })
+  })
+
+  return server
 }
 
 export default createServer
