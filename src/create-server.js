@@ -13,6 +13,7 @@ import { TransactionBody } from './hedera/pbnode/Transaction_pb'
 import { enumKeyByValue } from './hedera/utils'
 import portalReward from './portal'
 import { publisherAPIExists, publisherAPI } from './publisher'
+import logger from './logger'
 
 const env = ENV_NAME
 
@@ -106,6 +107,7 @@ const createServer = () => {
             tx = result.tx
             let resultTx = Hedera.parseTx(tx)
             resultTx.nodePrecheckcode = responseData.nodePrecheckcode
+            logger.info('CRYPTOTRANSFER resultTx', resultTx)
 
             // successful cryptoTransfer, so perform additional tasks
             if (responseData.nodePrecheckcode === 0) {
@@ -113,15 +115,16 @@ const createServer = () => {
             }
             // whether our cryptoTransfer succeeds or fails, we want to notify the publisher,
             // for publisher's record
-            console.log(publisherAPIExists())
+            logger.info('CRYPTOTRANSFER notify publisher', publisherAPIExists())
             if (publisherAPIExists()) {
-                console.log(resultTx) // what did we pass to our Publisher?
+                logger.info('CRYPTOTRANSFER notify publisher', resultTx) // what did we pass to our Publisher?
                 await publisherAPI(resultTx) // use REST API POST
             } else {
                 ioClientPublisher.binary(true).emit(CRYPTOTRANSFER, resultTx) // use socketio
             }
 
             // response back to client
+            logger.info('CRYPTOTRANSFER RESPONSE', responseData)
             socket.binary(true).emit(`${CRYPTOTRANSFER}_RESPONSE`, responseData)
         })
 
