@@ -16,19 +16,7 @@ let developmentConfig = {
     mode: 'development',
     devtool: 'source-map',
     watch: true,
-    plugins: [
-        {
-            apply: compiler => {
-                compiler.hooks.afterEmit.tap('AfterEmitPlugin', compilation => {
-                    exec('npm run dev:debug', (err, stdout, stderr) => {
-                        if (stdout) process.stdout.write(stdout)
-                        if (stderr) process.stderr.write(stderr)
-                    })
-                })
-            }
-        },
-        new webpack.DefinePlugin(globalsStringified)
-    ]
+    plugins: [new webpack.DefinePlugin(globalsStringified)]
 }
 
 export default merge(common, developmentConfig)
