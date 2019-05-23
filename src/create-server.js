@@ -13,6 +13,7 @@ import { TransactionBody } from './hedera/pbnode/Transaction_pb'
 import { enumKeyByValue } from './hedera/utils'
 import portalReward from './portal'
 import { publisherAPIExists, publisherAPI } from './publisher'
+
 import logger from './logger'
 
 const env = ENV_NAME
@@ -32,6 +33,8 @@ const CRYPTOGETACCOUNTBALANCE = enumKeyByValue(Q, Q.CRYPTOGETACCOUNTBALANCE)
 const TRANSACTIONGETRECEIPT = enumKeyByValue(Q, Q.TRANSACTIONGETRECEIPT)
 const FILEGETCONTENTS = enumKeyByValue(Q, Q.FILEGETCONTENTS)
 
+import redis from 'socket.io-redis';
+
 /**
  * Returns the created server instance with express and socketio events
  * @returns {object}
@@ -40,7 +43,8 @@ const createServer = () => {
     const app = express()
     const server = http.createServer(app)
     const io = ioServer().listen(server)
-
+    const HOST = config[env].REDIS_HOST
+    io.adapter(redis({ host: HOST, port: 6379 }));
     let hedera = new Hedera.Client()
 
     // just a blank page
