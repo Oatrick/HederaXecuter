@@ -1,4 +1,5 @@
 import config from '../config'
+import logger from '../logger'
 
 import axios from 'axios'
 
@@ -6,7 +7,7 @@ import forge from 'node-forge'
 
 const ed25519 = forge.pki.ed25519
 
-const env = process.env.NODE_ENV
+const env = ENV_NAME
 
 const PUBLISHER_API_SECRET = `${config[env].PUBLISHER_API_SECRET}`
 const PUBLISHER_API_POST = `${config[env].PUBLISHER_API_POST}`
@@ -34,9 +35,9 @@ const publisherAPI = async data => {
         let res = await axios.post(API, data, {
             headers
         })
-        console.log(`PUBLISHER RESPONSE FROM ${API}`, res.status)
+        logger.info(`PUBLISHER RESPONSE FROM ${API}`, res.status)
     } catch (e) {
-        console.log(`PUBLISHER ERROR from ${API}`, e)
+        logger.error(`PUBLISHER ERROR from ${API}`, e)
     }
 }
 
