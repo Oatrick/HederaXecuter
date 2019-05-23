@@ -3,3 +3,6 @@ node_modules
 dist
 .vscode
 .sonarlint
+
+.env.staging
+kube-configurations
