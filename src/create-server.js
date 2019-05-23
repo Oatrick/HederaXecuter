@@ -111,7 +111,7 @@ const createServer = () => {
             tx = result.tx
             let resultTx = Hedera.parseTx(tx)
             resultTx.nodePrecheckcode = responseData.nodePrecheckcode
-            logger.info('CRYPTOTRANSFER', resultTx)
+            logger.info('CRYPTOTRANSFER resultTx', resultTx)
 
             // successful cryptoTransfer, so perform additional tasks
             if (responseData.nodePrecheckcode === 0) {

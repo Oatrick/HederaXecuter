@@ -54,7 +54,7 @@ function contractCall(
     txBody.setTransactionid(txID)
     txBody.setTransactionfee(fee)
     txBody.setTransactionvalidduration(i.getDuration())
-    txBody.setGeneraterecord(true)
+    txBody.setGeneraterecord(false)
     txBody.setContractcall(body)
     txBody.setNodeaccountid(self.nodeAccountID)
     txBody.setMemo(memo)

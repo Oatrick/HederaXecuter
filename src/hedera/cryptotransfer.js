@@ -48,7 +48,7 @@ function cryptoTransfer(self, senderAccount, recipientAccount, amount) {
     txBody.setTransactionid(txID)
     txBody.setTransactionfee(fee)
     txBody.setTransactionvalidduration(i.getDuration())
-    txBody.setGeneraterecord(true)
+    txBody.setGeneraterecord(false)
     txBody.setCryptotransfer(cryptoTransferTransactionBody)
     txBody.setMemo('JavaScript micro-payment transaction')
 
