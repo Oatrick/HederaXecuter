@@ -3,7 +3,7 @@ import addressBook from './address-book'
 // Based on current node environment, use the appropriate address book
 
 const getRandomNode = () => {
-    const ADDRESS_BOOK = addressBook[process.env.NODE_ENV]
+    const ADDRESS_BOOK = addressBook[ENV_NAME]
     const randomNode =
         ADDRESS_BOOK[Math.floor(Math.random() * ADDRESS_BOOK.length)]
     const nodeAccount = Object.keys(randomNode)[0]
@@ -15,7 +15,7 @@ const getRandomNode = () => {
 }
 
 const getNodeAddressFromNodeAccount = nodeAccount => {
-    const ADDRESS_BOOK = addressBook[process.env.NODE_ENV]['ADDRESS_BOOK']
+    const ADDRESS_BOOK = addressBook[ENV_NAME]['ADDRESS_BOOK']
     for (let i = 0; i < ADDRESS_BOOK.length; i++) {
         let currentNode = ADDRESS_BOOK[i]
         let currentNodeAccount = Object.keys(currentNode)[0]

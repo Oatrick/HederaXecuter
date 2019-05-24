@@ -2,8 +2,8 @@
     "apps": [
         {
             "name": "payment-server",
-            "script": "app.js",
-            "exec_interpreter": "babel-node",
+            "script": "dist/app.js",
+            "exec_interpreter": "node",
             "env_staging": {
                 "NODE_ENV": "staging"
             },

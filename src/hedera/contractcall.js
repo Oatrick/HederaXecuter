@@ -6,6 +6,7 @@ import { TransactionBody } from './pbnode/TransactionBody_pb'
 import forge from 'node-forge'
 import debug from 'debug'
 import { TransactionResponse } from './pbnode/TransactionResponse_pb'
+import logger from '../logger'
 
 const log = debug('test:contractcall')
 
@@ -53,7 +54,7 @@ function contractCall(
     txBody.setTransactionid(txID)
     txBody.setTransactionfee(fee)
     txBody.setTransactionvalidduration(i.getDuration())
-    txBody.setGeneraterecord(true)
+    txBody.setGeneraterecord(false)
     txBody.setContractcall(body)
     txBody.setNodeaccountid(self.nodeAccountID)
     txBody.setMemo(memo)
@@ -80,8 +81,8 @@ function contractCall(
 async function contractCallProxy(self, data) {
     let tx = Transaction.deserializeBinary(data)
     let result = await contractCallMethodPromise(self, tx)
-    console.log('RESULT OF CONTRACT CALL METHOD PROMISE', result)
-    console.log(result.res)
+    logger.info('RESULT OF CONTRACT CALL METHOD PROMISE', result)
+    logger.info(result.res)
     let responseData = {}
     // Hedera network unreachable
     if (result.err === 14) {
@@ -96,7 +97,7 @@ async function contractCallProxy(self, data) {
     }
     if (result.err === null) {
         let r = TransactionResponse.toObject(true, result.res)
-        console.log('r is:', r)
+        logger.info('r is:', r)
         responseData = {
             nodePrecheckcode: r.nodetransactionprecheckcode,
             error: null

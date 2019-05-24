@@ -9,6 +9,7 @@ import { getTransactionReceiptsProxy } from './gettransactionreceipts'
 import { fileGetContentsProxy } from './filegetcontents'
 import i from './internal'
 import address from './address'
+import logger from '../logger'
 
 class Hedera {
     constructor(build) {
@@ -128,6 +129,7 @@ class Hedera {
 
     // handles incoming socketio data (query or transaction, in bytes) from web client, calls Hedera, and returns the response data back to socketio client
     async cryptoTransferProxy(msg) {
+        logger.info('CRYPTOTRANSFER data from client', msg)
         let response = await cryptoTransferProxy(this, msg)
         return response
     }
