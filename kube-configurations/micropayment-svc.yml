@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    traefik.backend.loadbalancer.stickiness: "true"
+    traefik.backend.loadbalancer.stickiness.cookieName: "socket"
+  labels:
+    app: micropayment-svc
+  name: micropayment-svc
+spec:
+  sessionAffinity: ClientIP
+  externalTrafficPolicy: Local
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8099
+  selector:
+    app: micropayment
+  type: NodePort
