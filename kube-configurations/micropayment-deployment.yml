@@ -1,37 +1,37 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: micropayment
-  labels:
-    app: micropayment
-spec:
-  replicas: 12
-  selector:
-    matchLabels:
-      app: micropayment
-  template:
-    metadata:
-      labels:
+    name: micropayment
+    labels:
         app: micropayment
-    spec:
-      containers:
-        - name: caraco-server
-          image: index.docker.io/caraco/hedera-payment-server-staging:v1.0.2-logger
-          resources:
-            requests:
-              memory: "0.5Gi"
-              cpu: "0.5"
-            limits:
-              memory: "1Gi"
-              cpu: "1"
-          imagePullPolicy: Always
-          volumeMounts:
-            - name: micropayment-config
-              mountPath: /usr/src/app/.env.staging
-              subPath: .env.staging
-      volumes:
-        - name: micropayment-config
-          configMap:
-            name: micropayment-config
-      imagePullSecrets:
-        - name: regcred
+spec:
+    replicas: 12
+    selector:
+        matchLabels:
+            app: micropayment
+    template:
+        metadata:
+            labels:
+                app: micropayment
+        spec:
+            containers:
+                - name: payment-server
+                  image: index.docker.io/hederahashgraph/payment-server:1.0.3
+                  resources:
+                      requests:
+                          memory: '0.5Gi'
+                          cpu: '0.5'
+                      limits:
+                          memory: '1Gi'
+                          cpu: '1'
+                  imagePullPolicy: Always
+                  volumeMounts:
+                      - name: micropayment-config
+                        mountPath: /usr/src/app/.env.staging
+                        subPath: .env.staging
+            volumes:
+                - name: micropayment-config
+                  configMap:
+                      name: micropayment-config
+            imagePullSecrets:
+                - name: regcred

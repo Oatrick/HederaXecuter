@@ -1,56 +1,56 @@
 version: '3'
 services:
-  nginx: 
-    image: nginx:latest
-    container_name: micropayment_nginx
-    networks:
-      - payment-cluster
-    depends_on:
-      - server1
-      - server2
-    environment:
-      - REDIS_HOST=micropayment-redis
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/micropayment-server.conf
-    ports:
-      - 8099:3000
-  redis:
-    image: redis
-    container_name: micropayment_redis
-    networks:
-      payment-cluster:
-        aliases:
-         - micropayment-redis
-    expose:
-      - 6379
-  server1: 
-    image: caraco/hedera-payment-server-staging:latest
-    container_name: micropayment-server-1
-    restart: always
-    networks:
-      payment-cluster:
-        aliases:
-         - server1
-    depends_on:
-      - redis
-    environment:
-      - REDIS_HOST=micropayment-redis
-    ports:
-      - 8099
-  server2: 
-    image: caraco/hedera-payment-server-staging:latest
-    container_name: micropayment-server-2
-    restart: always
-    networks:
-      payment-cluster:
-        aliases:
-         - server2
-    depends_on:
-      - redis
-    environment:
-      - REDIS_HOST=micropayment-redis
-    ports:
-      - 8099
-    
+    nginx:
+        image: nginx:latest
+        container_name: micropayment_nginx
+        networks:
+            - payment-cluster
+        depends_on:
+            - server1
+            - server2
+        environment:
+            - REDIS_HOST=micropayment-redis
+        volumes:
+            - ./nginx.conf:/etc/nginx/conf.d/micropayment-server.conf
+        ports:
+            - 8099:3000
+    redis:
+        image: redis
+        container_name: micropayment_redis
+        networks:
+            payment-cluster:
+                aliases:
+                    - micropayment-redis
+        expose:
+            - 6379
+    server1:
+        image: hederahashgraph/payment-server:latest
+        container_name: micropayment-server-1
+        restart: always
+        networks:
+            payment-cluster:
+                aliases:
+                    - server1
+        depends_on:
+            - redis
+        environment:
+            - REDIS_HOST=micropayment-redis
+        ports:
+            - 8099
+    server2:
+        image: hederahashgraph/payment-server:latest
+        container_name: micropayment-server-2
+        restart: always
+        networks:
+            payment-cluster:
+                aliases:
+                    - server2
+        depends_on:
+            - redis
+        environment:
+            - REDIS_HOST=micropayment-redis
+        ports:
+            - 8099
+
 networks:
-  payment-cluster:
+    payment-cluster:
