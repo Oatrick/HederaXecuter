@@ -6,7 +6,7 @@ This is an example Payment Server for the [Hedera Hashgraph](https://hedera.com/
 
 Hedera's example payment server was originally built for Hedera's community testing program, alongside example mobile wallets ([iOS](https://github.com/hashgraph/hedera-wallet-ios), [Android](https://github.com/hashgraph/hedera-wallet-android)), a [WordPress plugin](https://github.com/hashgraph/hedera-micropayment), and a [chrome browser extension](https://github.com/hashgraph/hedera-browser-extension).
 
-You can read a [technical deep dive on Hedera's community testing program](https://www.hedera.com/blog/a-technical-deep-dive-hederas-community-testing-program), which this payment server was initially built for, written by [Calvin Cheng](https://github.com/calvinchengx), if you're curious to learn more.
+You can read a [technical deep dive on Hedera's community testing program](https://www.hedera.com/blog/a-technical-deep-dive-hederas-community-testing-program), written by [Calvin Cheng](https://github.com/calvinchengx), if you're curious to learn more.
 
 ## How it works
 
