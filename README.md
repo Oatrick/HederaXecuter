@@ -4,7 +4,9 @@ This is an example Payment Server for the [Hedera Hashgraph](https://hedera.com/
 
 ## Background
 
-Hedera's example payment server was originally built for Hedera's community testing program, alongside example mobile wallets ([iOS](https://github.com/hashgraph/hedera-wallet-ios), [Android](https://github.com/hashgraph/hedera-wallet-android)), and a [chrome browser extension](https://github.com/hashgraph/hedera-browser-extension). You can read a [technical deep dive on Hedera's community testing program](https://www.hedera.com/blog/a-technical-deep-dive-hederas-community-testing-program), which this payment server was initially built for, written by [Calvin Cheng](https://github.com/calvinchengx), if you're curious to learn more.
+Hedera's example payment server was originally built for Hedera's community testing program, alongside example mobile wallets ([iOS](https://github.com/hashgraph/hedera-wallet-ios), [Android](https://github.com/hashgraph/hedera-wallet-android)), a [WordPress plugin](https://github.com/hashgraph/hedera-micropayment), and a [chrome browser extension](https://github.com/hashgraph/hedera-browser-extension).
+
+You can read a [technical deep dive on Hedera's community testing program](https://www.hedera.com/blog/a-technical-deep-dive-hederas-community-testing-program), which this payment server was initially built for, written by [Calvin Cheng](https://github.com/calvinchengx), if you're curious to learn more.
 
 ## How it works
 
@@ -14,7 +16,7 @@ Next it will receive a cryptographically signed CryptoTransfer transaction objec
 
 On receipt of the signed transaction object from the [Hedera Browser Extension](https://github.com/hashgraph/hedera-browser-extension), this payment server will then proxy the transaction object to a node in Hedera Network, via a gRPC network call.
 
-The [gRPC](https://www.grpc.io/faq/) response from Hedera Network will then be handled and _pushed back_ to listening socketio clients via the `CRYPTOTRANSFER_RESPONSE` event.
+The [gRPC](https://www.grpc.io/faq/) response from Hedera Network will then be handled and _pushed back_ to listening socketio clients via the `CRYPTOTRANSFER_RESPONSE` event, in our example's case, a WordPress website and plugin.
 
 ## Technology Stack
 
