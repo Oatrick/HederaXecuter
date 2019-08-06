@@ -3,9 +3,9 @@
     "version": "1.0.0",
     "description": "Server that receives transaction requests (micro payments, balance request, etc) and forwards them to Hedera",
     "scripts": {
-        "dev": "npm-run-all -l -p build:dev nodemon:dev",
-        "staging": "npm-run-all -l build:staging nodemon:staging",
-        "production": "npm-run-all -l build:production nodemon:production",
+        "dev": "npx npm-run-all -l -p build:dev nodemon:dev",
+        "staging": "npx npm-run-all -l build:staging nodemon:staging",
+        "production": "npx npm-run-all -l build:production nodemon:production",
         "nodemon:dev": "NODE_ENV=development nodemon dist/app.js",
         "nodemo  n:staging": "NODE_ENV=staging nodemon dist/app.js",
         "nodemon:production": "NODE_ENV=production nodemon dist/app.js",

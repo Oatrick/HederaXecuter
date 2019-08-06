@@ -70,7 +70,9 @@ class Hedera {
             // there's no need to provide nodeAddress if we setNodeAccount
             setClients(nodeAddress = undefined) {
                 if (nodeAddress === undefined) {
-                    const nodeAccount = i.accountIDAsString(this.nodeAccountID)
+                    const nodeAccount = i.accountStringFromAccountID(
+                        this.nodeAccountID
+                    )
                     nodeAddress = address.getNodeAddressFromNodeAccount(
                         nodeAccount
                     )
