@@ -109,6 +109,12 @@ const createServer = () => {
             // responseData is prepared for hedera-browser-extension
             responseData = result.responseData
             tx = result.tx
+            //TODO! check and test again
+            // let errorCode14 = 'UNAVAILABLE. Hedera network unreachable.'
+            // if (responseData.error === errorCode14 && tx === null ) {
+            //     console.log("come here")
+            //     return {error: 'UNAVAILABLE. Hedera network unreachable.'} 
+            // }
             let resultTx = Hedera.parseTx(tx)
             resultTx.nodePrecheckcode = responseData.nodePrecheckcode
             logger.info('CRYPTOTRANSFER resultTx', resultTx)

@@ -2,8 +2,8 @@
 // file: TransactionBody.proto
 
 import * as jspb from "google-protobuf";
-import * as AdminDelete_pb from "./AdminDelete_pb";
-import * as AdminUndelete_pb from "./AdminUndelete_pb";
+import * as SystemDelete_pb from "./SystemDelete_pb";
+import * as SystemUndelete_pb from "./SystemUndelete_pb";
 import * as ContractCall_pb from "./ContractCall_pb";
 import * as ContractCreate_pb from "./ContractCreate_pb";
 import * as ContractUpdate_pb from "./ContractUpdate_pb";
@@ -19,6 +19,7 @@ import * as FileDelete_pb from "./FileDelete_pb";
 import * as FileUpdate_pb from "./FileUpdate_pb";
 import * as Duration_pb from "./Duration_pb";
 import * as BasicTypes_pb from "./BasicTypes_pb";
+import * as ContractDelete_pb from "./ContractDelete_pb";
 
 export class TransactionBody extends jspb.Message {
   hasTransactionid(): boolean;
@@ -45,16 +46,6 @@ export class TransactionBody extends jspb.Message {
   getMemo(): string;
   setMemo(value: string): void;
 
-  hasAdmindelete(): boolean;
-  clearAdmindelete(): void;
-  getAdmindelete(): AdminDelete_pb.AdminDeleteTransactionBody | undefined;
-  setAdmindelete(value?: AdminDelete_pb.AdminDeleteTransactionBody): void;
-
-  hasAdminundelete(): boolean;
-  clearAdminundelete(): void;
-  getAdminundelete(): AdminUndelete_pb.AdminUndeleteTransactionBody | undefined;
-  setAdminundelete(value?: AdminUndelete_pb.AdminUndeleteTransactionBody): void;
-
   hasContractcall(): boolean;
   clearContractcall(): void;
   getContractcall(): ContractCall_pb.ContractCallTransactionBody | undefined;
@@ -69,6 +60,11 @@ export class TransactionBody extends jspb.Message {
   clearContractupdateinstance(): void;
   getContractupdateinstance(): ContractUpdate_pb.ContractUpdateTransactionBody | undefined;
   setContractupdateinstance(value?: ContractUpdate_pb.ContractUpdateTransactionBody): void;
+
+  hasContractdeleteinstance(): boolean;
+  clearContractdeleteinstance(): void;
+  getContractdeleteinstance(): ContractDelete_pb.ContractDeleteTransactionBody | undefined;
+  setContractdeleteinstance(value?: ContractDelete_pb.ContractDeleteTransactionBody): void;
 
   hasCryptoaddclaim(): boolean;
   clearCryptoaddclaim(): void;
@@ -120,6 +116,16 @@ export class TransactionBody extends jspb.Message {
   getFileupdate(): FileUpdate_pb.FileUpdateTransactionBody | undefined;
   setFileupdate(value?: FileUpdate_pb.FileUpdateTransactionBody): void;
 
+  hasSystemdelete(): boolean;
+  clearSystemdelete(): void;
+  getSystemdelete(): SystemDelete_pb.SystemDeleteTransactionBody | undefined;
+  setSystemdelete(value?: SystemDelete_pb.SystemDeleteTransactionBody): void;
+
+  hasSystemundelete(): boolean;
+  clearSystemundelete(): void;
+  getSystemundelete(): SystemUndelete_pb.SystemUndeleteTransactionBody | undefined;
+  setSystemundelete(value?: SystemUndelete_pb.SystemUndeleteTransactionBody): void;
+
   getDataCase(): TransactionBody.DataCase;
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): TransactionBody.AsObject;
@@ -139,11 +145,10 @@ export namespace TransactionBody {
     transactionvalidduration?: Duration_pb.Duration.AsObject,
     generaterecord: boolean,
     memo: string,
-    admindelete?: AdminDelete_pb.AdminDeleteTransactionBody.AsObject,
-    adminundelete?: AdminUndelete_pb.AdminUndeleteTransactionBody.AsObject,
     contractcall?: ContractCall_pb.ContractCallTransactionBody.AsObject,
     contractcreateinstance?: ContractCreate_pb.ContractCreateTransactionBody.AsObject,
     contractupdateinstance?: ContractUpdate_pb.ContractUpdateTransactionBody.AsObject,
+    contractdeleteinstance?: ContractDelete_pb.ContractDeleteTransactionBody.AsObject,
     cryptoaddclaim?: CryptoAddClaim_pb.CryptoAddClaimTransactionBody.AsObject,
     cryptocreateaccount?: CryptoCreate_pb.CryptoCreateTransactionBody.AsObject,
     cryptodelete?: CryptoDelete_pb.CryptoDeleteTransactionBody.AsObject,
@@ -154,15 +159,16 @@ export namespace TransactionBody {
     filecreate?: FileCreate_pb.FileCreateTransactionBody.AsObject,
     filedelete?: FileDelete_pb.FileDeleteTransactionBody.AsObject,
     fileupdate?: FileUpdate_pb.FileUpdateTransactionBody.AsObject,
+    systemdelete?: SystemDelete_pb.SystemDeleteTransactionBody.AsObject,
+    systemundelete?: SystemUndelete_pb.SystemUndeleteTransactionBody.AsObject,
   }
 
   export enum DataCase {
     DATA_NOT_SET = 0,
-    ADMINDELETE = 20,
-    ADMINUNDELETE = 21,
     CONTRACTCALL = 7,
     CONTRACTCREATEINSTANCE = 8,
     CONTRACTUPDATEINSTANCE = 9,
+    CONTRACTDELETEINSTANCE = 22,
     CRYPTOADDCLAIM = 10,
     CRYPTOCREATEACCOUNT = 11,
     CRYPTODELETE = 12,
@@ -173,6 +179,8 @@ export namespace TransactionBody {
     FILECREATE = 17,
     FILEDELETE = 18,
     FILEUPDATE = 19,
+    SYSTEMDELETE = 20,
+    SYSTEMUNDELETE = 21,
   }
 }
 

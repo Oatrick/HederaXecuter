@@ -21,10 +21,10 @@ export class Claim extends jspb.Message {
   getKeys(): BasicTypes_pb.KeyList | undefined;
   setKeys(value?: BasicTypes_pb.KeyList): void;
 
-  hasClaimexpiration(): boolean;
-  clearClaimexpiration(): void;
-  getClaimexpiration(): Duration_pb.Duration | undefined;
-  setClaimexpiration(value?: Duration_pb.Duration): void;
+  hasClaimduration(): boolean;
+  clearClaimduration(): void;
+  getClaimduration(): Duration_pb.Duration | undefined;
+  setClaimduration(value?: Duration_pb.Duration): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Claim.AsObject;
@@ -41,7 +41,7 @@ export namespace Claim {
     accountid?: BasicTypes_pb.AccountID.AsObject,
     hash: Uint8Array | string,
     keys?: BasicTypes_pb.KeyList.AsObject,
-    claimexpiration?: Duration_pb.Duration.AsObject,
+    claimduration?: Duration_pb.Duration.AsObject,
   }
 }
 

@@ -150,6 +150,18 @@ var SmartContractServiceService = exports.SmartContractServiceService = {
     responseDeserialize: deserialize_proto_Response,
   },
   // Retrieves a contract(using contract ID) by submitting the query. The grpc server returns the Response
+  deleteContract: {
+    path: '/proto.SmartContractService/deleteContract',
+    requestStream: false,
+    responseStream: false,
+    requestType: Transaction_pb.Transaction,
+    responseType: TransactionResponse_pb.TransactionResponse,
+    requestSerialize: serialize_proto_Transaction,
+    requestDeserialize: deserialize_proto_Transaction,
+    responseSerialize: serialize_proto_TransactionResponse,
+    responseDeserialize: deserialize_proto_TransactionResponse,
+  },
+  // Delete a contract instance(mark as deleted until it expires), and transfer hbars to the specified account. The grpc server returns the TransactionResponse
 };
 
 exports.SmartContractServiceClient = grpc.makeGenericClientConstructor(SmartContractServiceService);

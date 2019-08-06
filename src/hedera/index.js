@@ -8,6 +8,7 @@ import { contractCallProxy } from './contractcall'
 import { getTransactionReceiptsProxy } from './gettransactionreceipts'
 import { fileGetContentsProxy } from './filegetcontents'
 import i from './internal'
+import { Internal, CryptoTransfer} from 'hedera-sdk-ts'
 import address from './address'
 import logger from '../logger'
 
@@ -45,7 +46,7 @@ class Hedera {
             // if we didn't set the nodeAccount and nodeAddress when we initialised the client, we can use this method
             // where tx is a binary data from a client
             withNodeFromTx(tx) {
-                this.nodeAccountID = i.parseNodeAccountFromTx(tx)
+                this.nodeAccountID = Internal.parseNodeAccountFromTx(tx)
                 this.setClients()
                 return this
             }
@@ -53,7 +54,7 @@ class Hedera {
             // if we didn't set the nodeAccount and nodeAddress when we initialised the client, we can use this method
             // where q is a binary data from a client
             withNodeFromQ(q) {
-                this.nodeAccountID = i.parseNodeAccountFromQ(q)
+                this.nodeAccountID = Internal.parseNodeAccountFromQ(q)
                 this.setClients()
                 return this
             }
@@ -61,14 +62,14 @@ class Hedera {
             withOperator(keypair, account) {
                 this.operator = {}
                 this.operator.keypair = keypair
-                this.operator.account = i.accountIDFromString(account)
+                this.operator.account = Internal.accountIDFromString(account)
                 return this
             }
 
             // there's no need to provide nodeAddress if we setNodeAccount
             setClients(nodeAddress = undefined) {
                 if (nodeAddress === undefined) {
-                    const nodeAccount = i.accountStringFromAccountID(
+                    const nodeAccount = Internal.accountIDAsString(
                         this.nodeAccountID
                     )
                     nodeAddress = address.getNodeAddressFromNodeAccount(
@@ -91,7 +92,7 @@ class Hedera {
             }
 
             setNodeAccount(nodeAccount) {
-                this.nodeAccountID = i.accountIDFromString(nodeAccount)
+                this.nodeAccountID = Internal.accountIDFromString(nodeAccount)
             }
 
             connect() {
@@ -130,7 +131,8 @@ class Hedera {
     // handles incoming socketio data (query or transaction, in bytes) from web client, calls Hedera, and returns the response data back to socketio client
     async cryptoTransferProxy(msg) {
         logger.info('CRYPTOTRANSFER data from client', msg)
-        let response = await cryptoTransferProxy(this, msg)
+        let response = await CryptoTransfer.cryptoTransferProxy(this, msg)
+        // let response = await cryptoTransferProxy(this, msg)
         return response
     }
 
@@ -151,7 +153,7 @@ class Hedera {
     }
 
     static parseTx(tx) {
-        return i.parseTx(tx)
+        return Internal.parseTx(tx)
     }
 }
 

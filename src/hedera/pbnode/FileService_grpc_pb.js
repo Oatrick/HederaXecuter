@@ -126,8 +126,8 @@ var FileServiceService = exports.FileServiceService = {
     responseDeserialize: deserialize_proto_Response,
   },
   // Retrieves the file information by submitting the query. The grpc server returns the Response
-  adminDelete: {
-    path: '/proto.FileService/adminDelete',
+  systemDelete: {
+    path: '/proto.FileService/systemDelete',
     requestStream: false,
     responseStream: false,
     requestType: Transaction_pb.Transaction,
@@ -138,8 +138,8 @@ var FileServiceService = exports.FileServiceService = {
     responseDeserialize: deserialize_proto_TransactionResponse,
   },
   // Deletes a file by submitting the transaction when the account has admin privileges on the file. The grpc server returns the TransactionResponse
-  adminUndelete: {
-    path: '/proto.FileService/adminUndelete',
+  systemUndelete: {
+    path: '/proto.FileService/systemUndelete',
     requestStream: false,
     responseStream: false,
     requestType: Transaction_pb.Transaction,
