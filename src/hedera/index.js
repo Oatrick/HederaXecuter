@@ -134,6 +134,7 @@ class Hedera {
         logger.info('CRYPTOTRANSFER data from client', msg)
         // let response = await CryptoTransfer.cryptoTransferProxy(this, msg)
         let response = await cryptoTransferProxy(this, msg)
+        console.log("fails here", response)
         return response
     }
 

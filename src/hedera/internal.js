@@ -1,4 +1,10 @@
-import { AccountID, Signature, SignatureList } from './pbnode/BasicTypes_pb'
+import {
+    AccountID,
+    Signature,
+    SignatureList,
+    SignaturePair,
+    SignatureMap
+} from './pbnode/BasicTypes_pb'
 import { Timestamp } from './pbnode/Timestamp_pb'
 import { Duration } from './pbnode/Duration_pb'
 import { Transaction } from './pbnode/Transaction_pb'
@@ -127,6 +133,10 @@ function signWithKeys(txBodyBytes, ...privateKeysInHex) {
     let sigList = new SignatureList()
     sigList.setSigsList(ed25519Signatures)
     return sigList
+    // let sigMap = new SignatureMap()
+    // sigMap.setSigpairList()
+    // sigPair.setEd25519(ed25519Signatures)
+    // return sigPair
 }
 
 function parseTx(tx) {
